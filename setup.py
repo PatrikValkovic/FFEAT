@@ -15,7 +15,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     README = f.read()
 
 setup(
-    name="FEAT",
+    name="FFEAT",
     version=v,
     description="Framework for Evolutionary Algorithms in Torch",
     url="https://github.com/PatrikValkovic/FEAT",
@@ -24,7 +24,10 @@ setup(
     long_description_content_type="text/markdown",
     author="Patrik Valkovic",
     license="GNU LGPLv3",
-    packages=["feat"],
+    packages=[
+        "ffeat",
+        "ffeat/flow"
+    ],
     install_requires=[
         "numpy",
         "torch",

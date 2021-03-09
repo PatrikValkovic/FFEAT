@@ -3,4 +3,4 @@ __pycache__
 .ipynb_checkpoints
 build
 dist
-BBOBtorch.egg-info
+FEAT.egg-info
