@@ -4,6 +4,7 @@
 # 3/9/2021
 #
 ###############################
+from typing import Tuple, Any, Dict
 from ffeat import Pipe
 
 class Repeat(Pipe):
@@ -17,7 +18,7 @@ class Repeat(Pipe):
         self._loop_arguments = loop_arguments
         self._identifier = identifier
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         def _iter():
             if self._max_iterations is None:
                 while True:

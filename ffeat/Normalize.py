@@ -9,7 +9,7 @@ from .Pipe import Pipe
 
 
 class Normalize(Pipe):
-    def __call__(self, argument) -> Tuple[Tuple[Any], Dict[str, Any]]:
+    def __call__(self, argument) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         if isinstance(argument, tuple) and \
                 len(argument) == 2 and \
                 isinstance(argument[0], tuple) and \
