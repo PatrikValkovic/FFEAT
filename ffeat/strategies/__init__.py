@@ -7,3 +7,5 @@
 
 from .Initialization import Initialization as initialization
 from . import selection, crossover, mutation
+from .Evaluation import EvaluationWrapper as evaluation
+from .Strategy import Strategy

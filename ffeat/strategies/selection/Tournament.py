@@ -8,7 +8,6 @@ from typing import Tuple, Any, Dict, Union
 import torch as t
 from ffeat import Pipe
 
-# TODO tests
 class Tournament(Pipe):
     def __init__(self, num_select: Union[int, float] = None):
         self.num_select = num_select
@@ -30,5 +29,4 @@ class Tournament(Pipe):
             indices[1, t.logical_not(comparison)]
         ])
         new_population = population[better]
-
         return (new_population,), kwargs

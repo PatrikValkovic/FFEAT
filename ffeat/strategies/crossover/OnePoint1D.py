@@ -14,7 +14,8 @@ class OnePoint1D(Pipe):
     def __init__(self,
                  num_offsprings: int = None,
                  crossover_percentage: float = None,
-                 replace_parents: bool = True):
+                 replace_parents: bool = True,
+                 in_place: bool = True):
         if num_offsprings is None and crossover_percentage is None:
             raise ValueError("Either number of offsprings or a percentage must be provided")
         if num_offsprings is not None and num_offsprings % 2 != 0:
@@ -22,6 +23,7 @@ class OnePoint1D(Pipe):
         self.num_offsprings = num_offsprings
         self.crossover_percentage = crossover_percentage
         self.replace_parents = replace_parents
+        self.in_place = in_place
 
     def __call__(self, population, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         itp = t.long
@@ -44,6 +46,7 @@ class OnePoint1D(Pipe):
         children[:num_crossovers].add_(population[parents_indices[1]] * rpos)
         children[-num_crossovers:].add_(population[parents_indices[0]] * lpos)
 
+        population = t.clone(population) if not self.in_place and self.replace_parents else population
         if self.replace_parents:
             population[parents_indices.flatten()] = children
         else:

@@ -9,12 +9,11 @@ import torch as t
 from ffeat import Pipe
 
 
-# TODO tests
 class UniformInit(Pipe):
     def __init__(self,
                  population_size: int,
-                 max: Union[float, List[float], t.Tensor],
-                 min: Union[float, List[float], t.Tensor],
+                 min: Union[int, float, List[float], t.Tensor],
+                 max: Union[int, float, List[float], t.Tensor],
                  dimension: Union[int, Tuple[int]] = None,
                  dtype: t.dtype = t.float32,
                  device: t.device = None):
@@ -31,6 +30,14 @@ class UniformInit(Pipe):
             self.__dimension = min.shape
         # handle max and min
         self.__max, self.__min = max, min
+        if isinstance(max, int):
+            self.__max = float(max)
+        if isinstance(min, int):
+            self.__min = float(min)
+        if isinstance(self.__max, t.Tensor):
+            device = self.device = self.__max.device
+        if isinstance(self.__min, t.Tensor):
+            device = self.device = self.__min.device
         if not isinstance(self.__max, t.Tensor) and isinstance(self.__max, list):
             self.__max = t.tensor(self.__max, dtype=dtype, device=device)
             self.__dimension = self.__max.shape
