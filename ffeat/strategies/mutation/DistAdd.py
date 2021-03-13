@@ -21,13 +21,13 @@ class AddFromDistribution(Pipe):
         self.distribution = distribution
         self.in_place = in_place
 
-    def __call__(self, population, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+    def __call__(self, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         modifications = self.distribution.sample(sample_shape=population.shape).type(population.dtype).to(population.device)
         if self.mutation_rate < 1.0:
             to_modify = (t.rand(population.shape, device=population.device) < self.mutation_rate).type(t.int8)
             modifications = t.multiply(modifications, to_modify, out=modifications)
         population = t.add(population, modifications, out=population if self.in_place else modifications)
-        return (population,), kwargs
+        return (population, *args), kwargs
 
 
 class AddFromNormal(AddFromDistribution):

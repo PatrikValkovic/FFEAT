@@ -12,10 +12,10 @@ class Evaluation(Pipe):
     def __init__(self, evaluation_fn: Callable):
         self.evaluation_fn = evaluation_fn
 
-    def __call__(self, population, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+    def __call__(self, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         f = self.evaluation_fn(population)
         kwargs.update({"fitness": f})
-        return (population, f), kwargs
+        return (f, population, *args), kwargs
 
 
 class EvaluationWrapper:

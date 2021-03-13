@@ -16,5 +16,3 @@ class Sequence(Pipe):
         for step in self.__steps:
             args, kwargs = step(*args, **kwargs)
         return args, kwargs
-
-

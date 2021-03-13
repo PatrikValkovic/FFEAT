@@ -12,7 +12,7 @@ class Tournament(Pipe):
     def __init__(self, num_select: Union[int, float] = None):
         self.num_select = num_select
 
-    def __call__(self, population, fitnesses, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+    def __call__(self, fitnesses, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         originally = len(population)
         to_select = self.num_select
         if self.num_select is None:
@@ -29,4 +29,4 @@ class Tournament(Pipe):
             indices[1, t.logical_not(comparison)]
         ])
         new_population = population[better]
-        return (new_population,), kwargs
+        return (new_population, *args), kwargs

@@ -25,7 +25,7 @@ class OnePoint1D(Pipe):
         self.replace_parents = replace_parents
         self.in_place = in_place
 
-    def __call__(self, population, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+    def __call__(self, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         itp = t.long
         ptp = population.dtype
         dev = population.device
@@ -52,4 +52,4 @@ class OnePoint1D(Pipe):
         else:
             population = t.cat([population, children], dim=0)
 
-        return (population,), kwargs
+        return (population, *args), kwargs

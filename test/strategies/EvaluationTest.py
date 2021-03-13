@@ -23,7 +23,7 @@ class EvaluationTest(unittest.TestCase):
         def _fn(population):
             return t.sum(population ** 2, dim=-1)
         e = evaluation.Evaluation(_fn)
-        (population, fitness), kargs = e(t.randn((100,40)))
+        (fitness, population), kargs = e(t.randn((100,40)))
         self.assertEqual(population.shape, (100,40))
         self.assertEqual(fitness.shape, (100,))
 
@@ -31,7 +31,7 @@ class EvaluationTest(unittest.TestCase):
         def _fn(population):
             return t.sum(population ** 2, dim=-1)
         e = evaluation.Evaluation(_fn)
-        (population, fitness), kargs = e(t.randn((100,40)))
+        (fitness, population), kargs = e(t.randn((100,40)))
         self.assertTrue('fitness' in kargs)
         self.assertIs(fitness, kargs['fitness'])
 
@@ -40,7 +40,7 @@ class EvaluationTest(unittest.TestCase):
         def _fn(population):
             return t.sum(population ** 2, dim=-1)
         e = evaluation.Evaluation(_fn)
-        (population, fitness), kargs = e(t.randn((100,40), device='cuda'))
+        (fitness, population), kargs = e(t.randn((100,40), device='cuda'))
         self.assertEqual(population.device, t.device('cuda:0'))
         self.assertEqual(fitness.device, t.device('cuda:0'))
 

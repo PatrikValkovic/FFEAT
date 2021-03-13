@@ -12,21 +12,21 @@ class TournamentTest(unittest.TestCase):
     def test_absolute(self):
         s = selection.Tournament(40)
         pop, fitness = t.rand((100,60)), t.randn((100,))
-        (newpop,), kargs = s(pop, fitness)
+        (newpop,), kargs = s(fitness, pop)
         self.assertEqual(newpop.shape, (40,60))
         self.assertIsNot(newpop, pop)
 
     def test_fraction(self):
         s = selection.Tournament(0.4)
         pop, fitness = t.rand((100,60)), t.randn((100,))
-        (newpop,), kargs = s(pop, fitness)
+        (newpop,), kargs = s(fitness, pop)
         self.assertEqual(newpop.shape, (40,60))
         self.assertIsNot(newpop, pop)
 
     def test_no_number(self):
         s = selection.Tournament()
         pop, fitness = t.rand((100,60)), t.randn((100,))
-        (newpop,), kargs = s(pop, fitness)
+        (newpop,), kargs = s(fitness, pop)
         self.assertEqual(newpop.shape, (100,60))
         self.assertIsNot(newpop, pop)
         self.assertTrue(t.any(newpop != pop))
@@ -41,7 +41,7 @@ class TournamentTest(unittest.TestCase):
         s = selection.Tournament(1.0)
         old_pop = t.randn((1000,40))
         old_fitness = t.sum(t.pow(old_pop, 2.0), dim=-1)
-        (new_pop,), kargs = s(old_pop, old_fitness)
+        (new_pop,), kargs = s(old_fitness, old_pop)
         new_fitness = t.sum(t.pow(new_pop, 2.0), dim=-1)
         self.assertLess(t.mean(new_fitness), t.mean(old_fitness))
 
@@ -49,21 +49,21 @@ class TournamentTest(unittest.TestCase):
     def test_absolute_cuda(self):
         s = selection.Tournament(40)
         pop, fitness = t.rand((100,60), device='cuda:0'), t.randn((100,), device='cuda:0')
-        (newpop,), kargs = s(pop, fitness)
+        (newpop,), kargs = s(fitness, pop)
         self.assertEqual(newpop.device, t.device('cuda:0'))
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_fraction_cuda(self):
         s = selection.Tournament(0.4)
         pop, fitness = t.rand((100,60), device='cuda:0'), t.randn((100,), device='cuda:0')
-        (newpop,), kargs = s(pop, fitness)
+        (newpop,), kargs = s(fitness, pop)
         self.assertEqual(newpop.device, t.device('cuda:0'))
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_no_number_cuda(self):
         s = selection.Tournament()
         pop, fitness = t.rand((100,60), device='cuda:0'), t.randn((100,), device='cuda:0')
-        (newpop,), kargs = s(pop, fitness)
+        (newpop,), kargs = s(fitness, pop)
         self.assertEqual(newpop.device, t.device('cuda:0'))
 
 
