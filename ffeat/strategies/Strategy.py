@@ -12,15 +12,17 @@ from ffeat import Pipe, flow
 class Strategy(Pipe):
     def __init__(self,
                  initialization: Pipe,
-                 *steps: Pipe):
+                 *steps: Pipe,
+                 iterations: int = 100):
         self.__flow = flow.Sequence(
             initialization,
             flow.Repeat(
                 flow.Sequence(
                     *steps
                 ),
-                max_iterations=100,
-                loop_arguments=True
+                max_iterations=iterations,
+                loop_arguments=True,
+                identifier='ffeat'
             )
         )
 

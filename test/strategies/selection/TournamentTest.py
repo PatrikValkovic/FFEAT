@@ -37,6 +37,14 @@ class TournamentTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             s(pop, fitness)
 
+    def test_is_better(self):
+        s = selection.Tournament(1.0)
+        old_pop = t.randn((1000,40))
+        old_fitness = t.sum(t.pow(old_pop, 2.0), dim=-1)
+        (new_pop,), kargs = s(old_pop, old_fitness)
+        new_fitness = t.sum(t.pow(new_pop, 2.0), dim=-1)
+        self.assertLess(t.mean(new_fitness), t.mean(old_fitness))
+
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_absolute_cuda(self):
         s = selection.Tournament(40)
