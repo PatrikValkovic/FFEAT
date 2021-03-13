@@ -7,4 +7,8 @@
 
 class Base:
     def __init__(self, reporter):
-        self._report = reporter
+        self.__report = reporter
+
+    def _report(self, value):
+        if self.__report is not None:
+            self.__report(value)

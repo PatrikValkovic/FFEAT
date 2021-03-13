@@ -4,7 +4,7 @@
 # 3/13/2021
 #
 ###############################
-
+import os
 
 class Buffer:
     def __init__(self, file):
@@ -15,7 +15,11 @@ class Buffer:
 
 
 class File(Buffer):
-    def __init__(self, file):
+    def __init__(self, file: str):
+        if "/" in file:
+            slash_pos = file.rfind('/')
+            dir = file[:slash_pos]
+            os.makedirs(dir, exist_ok=True)
         super().__init__(open(file, "w"))
 
     def __del__(self):
