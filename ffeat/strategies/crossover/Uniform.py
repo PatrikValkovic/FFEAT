@@ -9,7 +9,6 @@ import torch as t
 from ffeat import Pipe
 
 
-# TODO what to do with multiple dimensions
 class Uniform(Pipe):
     def __init__(self,
                  num_offsprings: int = None,
