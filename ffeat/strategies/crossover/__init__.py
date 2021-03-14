@@ -6,3 +6,4 @@
 ###############################
 
 from .OnePoint1D import OnePoint1D
+from .Uniform import Uniform
