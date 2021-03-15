@@ -18,7 +18,7 @@ class Linear:
         self._step = step
         self._result_type = result_type
 
-    def __call__(self, *args, iteration: int, max_iteration: int = None, **kwargs) -> float:
+    def __call__(self, *args, iteration: int, max_iteration: int = None, **kwargs):
         step = self._step
         if max_iteration is not None and self._min is not None:
             step = (self._start - self._min) / max_iteration

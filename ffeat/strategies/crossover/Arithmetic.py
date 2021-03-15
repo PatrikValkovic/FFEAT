@@ -46,7 +46,7 @@ class Arithmetic(Pipe):
 
         parents_indices = t.randint(pop_len, (num_parents * num_children,), dtype=itp, device=dev)
         parents_weights = parent_weights.sample(parents_indices.shape).type(ptp).to(dev)
-        parents = population[parents_indices] * parents_weights[:, None]
+        parents = population[parents_indices] * t.reshape(parents_weights, (num_parents * num_children, *([1] * len(dim))))
         children = t.sum(parents.reshape((num_children, num_parents, *dim)), dim=1)
 
         population = t.clone(population) if not self.in_place and self.replace_parents else population
