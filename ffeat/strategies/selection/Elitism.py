@@ -14,10 +14,9 @@ _IFU = Union[int, float]
 class Elitism(Pipe):
     def __init__(self,
                  num_elites: Union[_IFU, Callable[..., _IFU]],
-                 selection,
                  *following_steps: Pipe):
         self._num_elites = self._handle_parameter(num_elites)
-        self.__follow = flow.Sequence(selection, *following_steps)
+        self.__follow = flow.Sequence(*following_steps)
 
     def __call__(self, fitnesses, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         originally = len(population)
