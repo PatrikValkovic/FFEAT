@@ -60,7 +60,7 @@ class AddFromNormTest(unittest.TestCase):
 
     def test_big_mutation_rate(self):
         with self.assertRaises(ValueError):
-             mutation.AddFromDistribution(t.distributions.Exponential(1.0), 1.0001)
+             d = mutation.AddFromDistribution(t.distributions.Exponential(1.0), 1.0001)
 
     def test_inf_mutation_rate(self):
         with self.assertRaises(ValueError):

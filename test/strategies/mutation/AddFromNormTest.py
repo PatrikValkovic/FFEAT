@@ -7,6 +7,7 @@
 import math
 import unittest
 import torch as t
+import ffeat
 from ffeat.strategies import mutation
 
 
@@ -65,6 +66,13 @@ class AddFromNormTest(unittest.TestCase):
     def test_inf_mutation_rate(self):
         with self.assertRaises(ValueError):
              mutation.AddFromNormal(2.0, math.inf)
+
+    def test_decay_std(self):
+        m = mutation.AddFromNormal(ffeat.decay.Linear(0.6, 0.1))
+        pop = t.randn((1000, 400))
+        (newpop,), kargs = m(pop, iteration=14, max_iteration=50)
+        self.assertEqual(newpop.shape, pop.shape)
+        self.assertIs(pop, newpop)
 
 
 if __name__ == '__main__':
