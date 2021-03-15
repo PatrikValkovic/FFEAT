@@ -45,17 +45,6 @@ class ElitismTest(unittest.TestCase):
         self.assertEqual(newpop.shape, (100,60))
         self.assertEqual(t.count_nonzero(t.all(newpop == pop, dim=-1)), 16)
 
-    def test_invalid_amount(self):
-        with self.assertRaises(ValueError):
-            selection.Elitism(object(), selection.Tournament())
-
-    def test_invalid_amount_after_call(self):
-        s = selection.Elitism(0.16, lambda *_, **__: ((t.rand((100,60)) + 10,), __))
-        s.num_elites = object()
-        pop, fitness = t.rand((100,60)), t.randn((100,))
-        with self.assertRaises(ValueError):
-            s(fitness, pop)
-
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_should_keep_16_percentage_cuda(self):
         s = selection.Elitism(0.16, lambda *_, **__: ((t.rand((100,60)) + 10,), __))
@@ -63,6 +52,36 @@ class ElitismTest(unittest.TestCase):
         (newpop,), kargs = s(fitness, pop)
         self.assertEqual(newpop.shape, (100,60))
         self.assertEqual(t.count_nonzero(t.all(newpop == pop, dim=-1)), 16)
+
+    def test_fraction_callback(self):
+        s = selection.Elitism(ffeat.decay.Linear(0.1, 0.01), selection.Tournament())
+        pop, fitness = t.rand((100,60)), t.randn((100,))
+        (newpop,), kargs = s(fitness, pop, iteration=13, max_iteration=23)
+        self.assertEqual(newpop.shape, (100,60))
+
+    def test_absolute_callback(self):
+        s = selection.Elitism(ffeat.decay.Linear(5, 2, result_type=int), selection.Tournament())
+        pop, fitness = t.rand((100,60)), t.randn((100,))
+        (newpop,), kargs = s(fitness, pop, iteration=13, max_iteration=23)
+        self.assertEqual(newpop.shape, (100,60))
+
+    def test_invalid_fraction(self):
+        s = selection.Elitism(ffeat.decay.Linear(11.3, 6.2), selection.Tournament())
+        pop, fitness = t.rand((100,60)), t.randn((100,))
+        with self.assertRaises(ValueError):
+            s(fitness, pop, iteration=13, max_iteration=23)
+
+    def test_invalid_absolute(self):
+        s = selection.Elitism(ffeat.decay.Linear(196, 112, result_type=int), selection.Tournament())
+        pop, fitness = t.rand((100,60)), t.randn((100,))
+        with self.assertRaises(ValueError):
+            s(fitness, pop, iteration=13, max_iteration=23)
+
+    def test_invalid_type_during_run(self):
+        s = selection.Elitism(lambda *_, **__: object(), selection.Tournament())
+        pop, fitness = t.rand((100,60)), t.randn((100,))
+        with self.assertRaises(ValueError):
+            s(fitness, pop, iteration=13, max_iteration=23)
 
     def test_in_alg(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)

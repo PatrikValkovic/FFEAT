@@ -17,13 +17,13 @@ class AddFromDistribution(Pipe):
                  ):
         if isinstance(mutation_rate, float) and (mutation_rate < 0.0 or mutation_rate > 1.0):
             raise ValueError("Mutation rate must be in the range [0.0, 1.0]")
-        self.mutation_rate = self._handle_parameter(mutation_rate)
-        self.distribution = self._handle_parameter(distribution)
+        self._mutation_rate = self._handle_parameter(mutation_rate)
+        self._distribution = self._handle_parameter(distribution)
         self.in_place = in_place
 
     def __call__(self, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
-        dist = self.distribution(population, *args, **kwargs)
-        mutation_rate = self.mutation_rate(population, *args, **kwargs)
+        dist = self._distribution(population, *args, **kwargs)
+        mutation_rate = self._mutation_rate(population, *args, **kwargs)
         if mutation_rate < 0.0 or mutation_rate > 1.0:
             raise ValueError("Mutation rate must be in the range [0.0, 1.0]")
         modifications = dist.sample(sample_shape=population.shape).type(population.dtype).to(population.device)
@@ -45,5 +45,5 @@ class AddFromNormal(AddFromDistribution):
 
     def __call__(self, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         if isinstance(self._std, Callable):
-            self.distribution = self._handle_parameter(t.distributions.Normal(0.0, self._std(*args, **kwargs)))
+            self._distribution = self._handle_parameter(t.distributions.Normal(0.0, self._std(*args, **kwargs)))
         return super().__call__(*args, **kwargs)
