@@ -75,6 +75,42 @@ class DifferentialTest(unittest.TestCase):
         self.assertEqual(newpop.shape, (1000,400))
         self.assertIs(newpop, p)
 
+    def test_with_fitnesses(self):
+        _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
+        d = crossover.DifferentialWithFitness(600, replace_only_better=True, evaluation=evaluation.Evaluation(_f))
+        p = t.randn((1000, 400))
+        f = _f(p)
+        (nf, np), kargs = d(f, p)
+        self.assertEqual(np.shape, (1000,400))
+        self.assertIs(np, p)
+
+    def test_with_fitnesses_replace_better_propagated(self):
+        _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
+        d = crossover.DifferentialWithFitness(600, replace_only_better=True, evaluation=evaluation.Evaluation(_f))
+        p = t.randn((1000, 400))
+        f = _f(p)
+        (nf, np), kargs = d(f, p)
+        real_fitness = _f(np)
+        self.assertTrue(t.all(t.abs(nf - real_fitness) < 1e-6))
+
+    def test_with_fitnesses_replace_propagated(self):
+        _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
+        d = crossover.DifferentialWithFitness(600, replace_parents=True, evaluation=evaluation.Evaluation(_f))
+        p = t.randn((1000, 400))
+        f = _f(p)
+        (nf, np), kargs = d(f, p)
+        real_fitness = _f(np)
+        self.assertTrue(t.all(t.abs(nf - real_fitness) < 1e-6))
+
+    def test_with_fitnesses_noreplace_propagated(self):
+        _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
+        d = crossover.DifferentialWithFitness(600, replace_parents=False, evaluation=evaluation.Evaluation(_f))
+        p = t.randn((1000, 400))
+        f = _f(p)
+        (nf, np), kargs = d(f, p)
+        real_fitness = _f(np)
+        self.assertTrue(t.all(t.abs(nf - real_fitness) < 1e-6))
+
     def test_no_offspring_count(self):
         with self.assertRaises(ValueError):
             crossover.Differential()
@@ -117,15 +153,46 @@ class DifferentialTest(unittest.TestCase):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
         alg = ffeat.strategies.Strategy(
             ffeat.strategies.initialization.Uniform(100, -5.0, 5.0, 40, device='cuda:0'),
-            ffeat.strategies.evaluation.Evaluation(_f),
-            ffeat.strategies.selection.Tournament(100),
             ffeat.strategies.crossover.Differential(
-                60,
-                crossover_probability=lambda *_, **k: t.distributions.Normal(0.8, 0.1 * k['iteration'] / k['max_iteration']),
-                differential_weight = lambda *_, **k: t.distributions.Normal(0.6, 0.1 * k['iteration'] / k['max_iteration']),
+                fraction_offsprings=0.6,
+                crossover_probability=lambda *_, **k: t.distributions.Normal(0.8, 1.0 * k['iteration'] / k['max_iteration']),
+                differential_weight=lambda *_, **k: t.distributions.Normal(0.3, 1.0 * k['iteration'] / k['max_iteration']),
                 replace_only_better=True,
                 evaluation=ffeat.strategies.evaluation.Evaluation(_f)
             ),
+            iterations=500
+        )
+        (pop,), kargs = alg()
+        self.assertTrue(t.all(_f(pop) < 1))
+
+    def test_in_alg_replace_better_with_fitness(self):
+        _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
+        alg = ffeat.strategies.Strategy(
+            ffeat.strategies.initialization.Uniform(100, -5.0, 5.0, 40),
+            ffeat.strategies.evaluation.Evaluation(_f),
+            ffeat.strategies.crossover.DifferentialWithFitness(
+                100,
+                replace_only_better=True,
+                evaluation=ffeat.strategies.evaluation.Evaluation(_f)
+            ),
+            ffeat.strategies.selection.Tournament(100),
+            iterations=500
+        )
+        (pop,), kargs = alg()
+        self.assertTrue(t.all(_f(pop) < 1))
+
+    @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
+    def test_in_alg_replace_better_with_fitness_cuda(self):
+        _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
+        alg = ffeat.strategies.Strategy(
+            ffeat.strategies.initialization.Uniform(100, -1.0, 1.0, 40, device='cuda:0'),
+            ffeat.strategies.evaluation.Evaluation(_f),
+            ffeat.strategies.crossover.DifferentialWithFitness(
+                100,
+                replace_only_better=True,
+                evaluation=ffeat.strategies.evaluation.Evaluation(_f)
+            ),
+            ffeat.strategies.selection.Tournament(100),
             iterations=500
         )
         (pop,), kargs = alg()
