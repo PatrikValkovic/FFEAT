@@ -4,18 +4,21 @@
 # 3/15/2021
 #
 ###############################
+from typing import Union
+
+_IFU = Union[int, float]
 
 class Linear:
     def __init__(self,
-                 start: float,
-                 min: float = None,
-                 step: float = None,
+                 start: _IFU,
+                 min: _IFU = None,
+                 step: _IFU = None,
                  result_type=float):
         if min is None and step is None:
             raise ValueError("Either min value or step size must be set")
-        self._start = start
-        self._min = min
-        self._step = step
+        self._start = float(start)
+        self._min = float(min) if min is not None else None
+        self._step = float(step) if step is not None else None
         self._result_type = result_type
 
     def __call__(self, *args, iteration: int, max_iteration: int = None, **kwargs):

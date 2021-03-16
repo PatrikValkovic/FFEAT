@@ -7,3 +7,4 @@
 
 from .DistAdd import AddFromDistribution, AddFromNormal
 from .AdaptiveStep import AdaptiveStep
+from .Replace import Replace, ReplaceUniform

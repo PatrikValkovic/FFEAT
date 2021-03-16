@@ -32,5 +32,8 @@ class Elitism(Pipe):
         elites_indices = fitnesses <= quantile
         elites = t.clone(population[elites_indices])
         (population, *args), kargs = self.__follow(fitnesses, population, *args, **kwargs)
-        population[elites_indices] = elites
+        if len(population) != len(elites_indices):
+            population[t.where(elites_indices)[0]] = elites
+        else:
+            population[elites_indices] = elites
         return (population, *args), kwargs
