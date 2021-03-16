@@ -1,0 +1,136 @@
+###############################
+#
+# Created by Patrik Valkovic
+# 3/16/2021
+#
+###############################
+import unittest
+import torch as t
+import ffeat
+from ffeat.strategies import crossover, evaluation
+
+
+class DifferentialTest(unittest.TestCase):
+    def test_absolute(self):
+        d = crossover.Differential(600)
+        p = t.randn((1000, 400))
+        (newpop,), kargs = d(p)
+        self.assertEqual(newpop.shape, (1000,400))
+        self.assertIs(newpop, p)
+
+    def test_fraction(self):
+        d = crossover.Differential(fraction_offsprings=0.6)
+        p = t.randn((1000, 400))
+        (newpop,), kargs = d(p)
+        self.assertEqual(newpop.shape, (1000,400))
+        self.assertIs(newpop, p)
+
+    def test_absolute_no_replace(self):
+        d = crossover.Differential(600, replace_parents=False)
+        p = t.randn((1000, 400))
+        (newpop,), kargs = d(p)
+        self.assertEqual(newpop.shape, (1600,400))
+
+    def test_fraction_no_replace(self):
+        d = crossover.Differential(fraction_offsprings=0.6, replace_parents=False)
+        p = t.randn((1000, 400))
+        (newpop,), kargs = d(p)
+        self.assertEqual(newpop.shape, (1600,400))
+
+    def test_replace_better(self):
+        fn = lambda x: t.sum(x ** 2, dim=-1)
+        d = crossover.Differential(600, replace_only_better=True, evaluation=evaluation.Evaluation(fn))
+        p = t.randn((1000, 400))
+        (newpop,), kargs = d(t.clone(p))
+        self.assertLessEqual(t.mean(fn(p)), t.mean(fn(newpop)))
+
+    def test_replace_better_without_eval(self):
+        with self.assertRaises(ValueError):
+            crossover.Differential(600, replace_only_better=True)
+
+    def test_CR_F_dist(self):
+        d = crossover.Differential(600,
+                                   crossover_probability=t.distributions.Uniform(0.7, 0.9),
+                                   differential_weight=t.distributions.Uniform(0.75, 0.85))
+        p = t.randn((1000, 400))
+        (newpop,), kargs = d(p)
+        self.assertEqual(newpop.shape, (1000,400))
+        self.assertIs(newpop, p)
+
+    def test_CR_F_callable(self):
+        d = crossover.Differential(600,
+                                   crossover_probability=lambda *_, **__: 0.9,
+                                   differential_weight=lambda *_, **__: 0.7)
+        p = t.randn((1000, 400))
+        (newpop,), kargs = d(p)
+        self.assertEqual(newpop.shape, (1000,400))
+        self.assertIs(newpop, p)
+
+    def test_CR_F_callable_dist(self):
+        d = crossover.Differential(600,
+                                   crossover_probability=lambda *_, **__: t.distributions.Uniform(0.7, 0.9),
+                                   differential_weight=lambda *_, **__: t.distributions.Uniform(0.75, 0.85))
+        p = t.randn((1000, 400))
+        (newpop,), kargs = d(p)
+        self.assertEqual(newpop.shape, (1000,400))
+        self.assertIs(newpop, p)
+
+    def test_no_offspring_count(self):
+        with self.assertRaises(ValueError):
+            crossover.Differential()
+
+    def test_in_alg(self):
+        _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
+        alg = ffeat.strategies.Strategy(
+            ffeat.strategies.initialization.Uniform(100, -5.0, 5.0, 40),
+            ffeat.strategies.evaluation.Evaluation(_f),
+            ffeat.strategies.selection.Tournament(100),
+            ffeat.strategies.crossover.Differential(
+                60,
+                crossover_probability=lambda *_, **k: t.distributions.Normal(0.8, 0.1 * k['iteration'] / k['max_iteration']),
+                differential_weight = lambda *_, **k: t.distributions.Normal(0.6, 0.1 * k['iteration'] / k['max_iteration'])
+            ),
+            iterations=500
+        )
+        (pop,), kargs = alg()
+        self.assertTrue(t.all(_f(pop) < 1))
+
+    @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
+    def test_in_alg_cuda(self):
+        _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
+        alg = ffeat.strategies.Strategy(
+            ffeat.strategies.initialization.Uniform(100, -5.0, 5.0, 40, device='cuda:0'),
+            ffeat.strategies.evaluation.Evaluation(_f),
+            ffeat.strategies.selection.Tournament(100),
+            ffeat.strategies.crossover.Differential(
+                60,
+                crossover_probability=lambda *_, **k: t.distributions.Normal(0.8, 0.1 * k['iteration'] / k['max_iteration']),
+                differential_weight = lambda *_, **k: t.distributions.Normal(0.6, 0.1 * k['iteration'] / k['max_iteration'])
+            ),
+            iterations=500
+        )
+        (pop,), kargs = alg()
+        self.assertTrue(t.all(_f(pop) < 1))
+
+    @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
+    def test_in_alg_cuda_replace_better(self):
+        _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
+        alg = ffeat.strategies.Strategy(
+            ffeat.strategies.initialization.Uniform(100, -5.0, 5.0, 40, device='cuda:0'),
+            ffeat.strategies.evaluation.Evaluation(_f),
+            ffeat.strategies.selection.Tournament(100),
+            ffeat.strategies.crossover.Differential(
+                60,
+                crossover_probability=lambda *_, **k: t.distributions.Normal(0.8, 0.1 * k['iteration'] / k['max_iteration']),
+                differential_weight = lambda *_, **k: t.distributions.Normal(0.6, 0.1 * k['iteration'] / k['max_iteration']),
+                replace_only_better=True,
+                evaluation=ffeat.strategies.evaluation.Evaluation(_f)
+            ),
+            iterations=500
+        )
+        (pop,), kargs = alg()
+        self.assertTrue(t.all(_f(pop) < 1))
+
+
+if __name__ == '__main__':
+    unittest.main()

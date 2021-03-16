@@ -151,8 +151,8 @@ class ArithmeticTest(unittest.TestCase):
             ffeat.strategies.initialization.Uniform(100, -5.0, 5.0, 40),
             ffeat.strategies.evaluation.Evaluation(_f),
             ffeat.strategies.selection.Tournament(1.0),
-            ffeat.strategies.mutation.AddFromNormal(0.1, 0.1),
-            ffeat.strategies.crossover.Arithmetic(40, num_parents=3, parent_weight=NormalStdCallback(0.5, 0.3)),
+            ffeat.strategies.mutation.AddFromNormal(0.01, 0.1),
+            ffeat.strategies.crossover.Arithmetic(60, num_parents=3, parent_weight=NormalStdCallback(0.5, 0.3)),
             iterations=500
         )
         (pop,), kargs = alg()
