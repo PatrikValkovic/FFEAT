@@ -8,6 +8,7 @@ import unittest
 import torch as t
 import ffeat
 from ffeat.strategies import selection
+from ffeat.utils import decay
 
 
 class ElitismTest(unittest.TestCase):
@@ -54,25 +55,25 @@ class ElitismTest(unittest.TestCase):
         self.assertEqual(t.count_nonzero(t.all(newpop == pop, dim=-1)), 16)
 
     def test_fraction_callback(self):
-        s = selection.Elitism(ffeat.decay.Linear(0.1, 0.01), selection.Tournament())
+        s = selection.Elitism(decay.Linear(0.1, 0.01), selection.Tournament())
         pop, fitness = t.rand((100,60)), t.randn((100,))
         (newpop,), kargs = s(fitness, pop, iteration=13, max_iteration=23)
         self.assertEqual(newpop.shape, (100,60))
 
     def test_absolute_callback(self):
-        s = selection.Elitism(ffeat.decay.Linear(5, 2, result_type=int), selection.Tournament())
+        s = selection.Elitism(decay.Linear(5, 2, result_type=int), selection.Tournament())
         pop, fitness = t.rand((100,60)), t.randn((100,))
         (newpop,), kargs = s(fitness, pop, iteration=13, max_iteration=23)
         self.assertEqual(newpop.shape, (100,60))
 
     def test_invalid_fraction(self):
-        s = selection.Elitism(ffeat.decay.Linear(11.3, 6.2), selection.Tournament())
+        s = selection.Elitism(decay.Linear(11.3, 6.2), selection.Tournament())
         pop, fitness = t.rand((100,60)), t.randn((100,))
         with self.assertRaises(ValueError):
             s(fitness, pop, iteration=13, max_iteration=23)
 
     def test_invalid_absolute(self):
-        s = selection.Elitism(ffeat.decay.Linear(196, 112, result_type=int), selection.Tournament())
+        s = selection.Elitism(decay.Linear(196, 112, result_type=int), selection.Tournament())
         pop, fitness = t.rand((100,60)), t.randn((100,))
         with self.assertRaises(ValueError):
             s(fitness, pop, iteration=13, max_iteration=23)

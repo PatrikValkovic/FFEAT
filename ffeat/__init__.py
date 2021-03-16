@@ -10,4 +10,4 @@ from .Normalize import Normalize
 from . import flow
 from . import strategies
 from . import measure
-from . import decay
+from . import utils

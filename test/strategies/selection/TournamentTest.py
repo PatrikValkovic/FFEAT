@@ -47,14 +47,14 @@ class TournamentTest(unittest.TestCase):
         self.assertLess(t.mean(new_fitness), t.mean(old_fitness))
 
     def test_absolute_callback(self):
-        s = selection.Tournament(ffeat.decay.Linear(80,40, result_type=int))
+        s = selection.Tournament(ffeat.utils.decay.Linear(80,40, result_type=int))
         pop, fitness = t.rand((100,60)), t.randn((100,))
         (newpop,), kargs = s(fitness, pop, iteration=30, max_iteration=40)
         self.assertEqual(newpop.shape, (50,60))
         self.assertIsNot(newpop, pop)
 
     def test_fraction_callback(self):
-        s = selection.Tournament(ffeat.decay.Linear(0.8, 0.4))
+        s = selection.Tournament(ffeat.utils.decay.Linear(0.8, 0.4))
         pop, fitness = t.rand((100,60)), t.randn((100,))
         (newpop,), kargs = s(fitness, pop, iteration=30, max_iteration=40)
         self.assertEqual(newpop.shape, (50,60))

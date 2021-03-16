@@ -5,7 +5,7 @@
 #
 ###############################
 import unittest
-import ffeat.decay as decay
+import ffeat.utils.decay as decay
 
 
 class PolynomialTest(unittest.TestCase):

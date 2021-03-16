@@ -8,6 +8,7 @@ import unittest
 import torch as t
 import ffeat
 from ffeat.strategies import crossover
+from ffeat.utils import decay
 
 
 class ArithmeticTest(unittest.TestCase):
@@ -109,28 +110,28 @@ class ArithmeticTest(unittest.TestCase):
         self.assertEqual(newpop.shape, (100,17,13))
 
     def test_absolute_offsprings_callback(self):
-        s = crossover.Arithmetic(num_offsprings=ffeat.decay.Linear(60,40,result_type=int))
+        s = crossover.Arithmetic(num_offsprings=decay.Linear(60,40,result_type=int))
         pop = t.randn(100,400)
         popc = t.clone(pop)
         (newpop,), kargs = s(popc, iteration=14, max_iteration=100)
         self.assertEqual(newpop.shape, (100,400))
 
     def test_fraction_offsprings_callback(self):
-        s = crossover.Arithmetic(fraction_offsprings=ffeat.decay.Linear(0.6,0.4))
+        s = crossover.Arithmetic(fraction_offsprings=decay.Linear(0.6,0.4))
         pop = t.randn(100,400)
         popc = t.clone(pop)
         (newpop,), kargs = s(popc, iteration=14, max_iteration=100)
         self.assertEqual(newpop.shape, (100,400))
 
     def test_parents_callback(self):
-        s = crossover.Arithmetic(num_offsprings=40, num_parents=ffeat.decay.Linear(6,2,result_type=int))
+        s = crossover.Arithmetic(num_offsprings=40, num_parents=decay.Linear(6,2,result_type=int))
         pop = t.randn(100,400)
         popc = t.clone(pop)
         (newpop,), kargs = s(popc, iteration=14, max_iteration=100)
         self.assertEqual(newpop.shape, (100,400))
 
     def test_parents_weights_callback(self):
-        class NormalStdCallback(ffeat.decay.Linear):
+        class NormalStdCallback(decay.Linear):
             def __call__(self, *args, iteration: int, max_iteration: int = None, **kwargs):
                 val = super().__call__(*args, iteration=iteration, max_iteration=max_iteration, **kwargs)
                 return t.distributions.Normal(0.5, val)
@@ -141,7 +142,7 @@ class ArithmeticTest(unittest.TestCase):
         self.assertEqual(newpop.shape, (100,400))
 
     def test_in_alg(self):
-        class NormalStdCallback(ffeat.decay.Linear):
+        class NormalStdCallback(decay.Linear):
             def __call__(self, *args, iteration: int, max_iteration: int = None, **kwargs):
                 val = super().__call__(*args, iteration=iteration, max_iteration=max_iteration, **kwargs)
                 return t.distributions.Normal(0.5, val)
