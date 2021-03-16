@@ -7,3 +7,4 @@
 
 from .Tournament import Tournament
 from .Elitism import Elitism
+from .Wheel import Wheel

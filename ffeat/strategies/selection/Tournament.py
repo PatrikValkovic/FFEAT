@@ -10,6 +10,7 @@ from ffeat import Pipe
 
 _IFU = Union[int, float]
 
+
 class Tournament(Pipe):
     def __init__(self, num_select: Union[_IFU, Callable[..., _IFU]] = None):
         self.num_select = self._handle_parameter(num_select)
