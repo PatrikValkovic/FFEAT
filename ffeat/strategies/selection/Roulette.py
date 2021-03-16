@@ -11,7 +11,7 @@ from ffeat import Pipe
 _IFU = Union[int, float]
 
 
-class Wheel(Pipe):
+class Roulette(Pipe):
     def __init__(self,
                  num_select: Union[_IFU, Callable[..., _IFU]] = None,
                  ):

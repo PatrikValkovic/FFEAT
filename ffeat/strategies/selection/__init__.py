@@ -7,4 +7,5 @@
 
 from .Tournament import Tournament
 from .Elitism import Elitism
-from .Wheel import Wheel
+from .Roulette import Roulette
+from .StochasticUniversalSampling import StochasticUniversalSampling

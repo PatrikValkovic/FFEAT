@@ -22,7 +22,7 @@ class OnePoint1DTest(unittest.TestCase):
         self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
 
     def test_offsprings_fraction(self):
-        s = crossover.OnePoint1D(crossover_percentage=0.4)
+        s = crossover.OnePoint1D(fraction_offsprings=0.4)
         pop = t.randn(100,400)
         popc = t.clone(pop)
         (newpop,), kargs = s(popc)
@@ -38,7 +38,7 @@ class OnePoint1DTest(unittest.TestCase):
         self.assertEqual(newpop.shape, (140,400))
 
     def test_fraction_without_replace(self):
-        s = crossover.OnePoint1D(crossover_percentage=0.4, replace_parents=False)
+        s = crossover.OnePoint1D(fraction_offsprings=0.4, replace_parents=False)
         pop = t.randn(100,400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (140,400))
@@ -61,7 +61,7 @@ class OnePoint1DTest(unittest.TestCase):
         self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
 
     def test_fraction_absolute_not_inplace(self):
-        s = crossover.OnePoint1D(crossover_percentage=0.4, in_place=False)
+        s = crossover.OnePoint1D(fraction_offsprings=0.4, in_place=False)
         pop = t.randn(100,400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (100,400))
@@ -79,7 +79,7 @@ class OnePoint1DTest(unittest.TestCase):
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_offsprings_fraction_cuda(self):
-        s = crossover.OnePoint1D(crossover_percentage=0.4)
+        s = crossover.OnePoint1D(fraction_offsprings=0.4)
         pop = t.randn(100,400, device='cuda:0')
         popc = t.clone(pop)
         (newpop,), kargs = s(popc)
@@ -94,7 +94,7 @@ class OnePoint1DTest(unittest.TestCase):
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_fraction_absolute_not_inplace_cuda(self):
-        s = crossover.OnePoint1D(crossover_percentage=0.4, in_place=False)
+        s = crossover.OnePoint1D(fraction_offsprings=0.4, in_place=False)
         pop = t.randn(100,400, device='cuda:0')
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.device, t.device('cuda:0'))

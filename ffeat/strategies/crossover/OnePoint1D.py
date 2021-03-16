@@ -13,15 +13,15 @@ from ffeat import Pipe
 class OnePoint1D(Pipe):
     def __init__(self,
                  num_offsprings: int = None,
-                 crossover_percentage: float = None,
+                 fraction_offsprings: float = None,
                  replace_parents: bool = True,
                  in_place: bool = True):
-        if num_offsprings is None and crossover_percentage is None:
+        if num_offsprings is None and fraction_offsprings is None:
             raise ValueError("Either number of offsprings or a percentage must be provided")
         if num_offsprings is not None and num_offsprings % 2 != 0:
             raise ValueError("Number of offsprings must be even")
-        self.num_offsprings = num_offsprings
-        self.crossover_percentage = crossover_percentage
+        self._num_offsprings = num_offsprings
+        self._fraction_offsprings = fraction_offsprings
         self.replace_parents = replace_parents
         self.in_place = in_place
 
@@ -31,7 +31,7 @@ class OnePoint1D(Pipe):
         dev = population.device
         num_parents = len(population)
         dim = population.shape[1]
-        num_crossovers = self.num_offsprings // 2 if self.num_offsprings is not None else int(len(population) * self.crossover_percentage / 2.0)
+        num_crossovers = self._num_offsprings // 2 if self._num_offsprings is not None else int(len(population) * self._fraction_offsprings / 2.0)
         num_children = num_crossovers * 2
 
         crossover_indices = t.randint(dim - 1, size=(num_crossovers,), dtype=itp, device=dev) + 1
