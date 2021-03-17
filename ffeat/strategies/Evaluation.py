@@ -14,7 +14,7 @@ class Evaluation(Pipe):
 
     def __call__(self, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         f = self.evaluation_fn(population)
-        kwargs.update({"fitness": f})
+        kwargs["fitness"] = f
         return (f, population, *args), kwargs
 
 

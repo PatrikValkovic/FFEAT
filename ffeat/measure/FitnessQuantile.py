@@ -30,19 +30,25 @@ class FitnessQuantile(Pipe, Base):
 
 
 class FitnessMedian(FitnessQuantile):
+    ARG_NAME = "fitness_median"
+
     def __init__(self, reporter = None):
         super().__init__(0.5, reporter)
 
     def _dict_key(self):
         yield from super()._dict_key()
-        yield "fitness_median"
+        yield FitnessMedian.ARG_NAME
 
 
 class Fitness95Quantile(FitnessQuantile):
+    ARG_NAME = "fitness_q95"
+
     def __init__(self, reporter = None):
         super().__init__(0.95, reporter)
 
 
 class Fitness99Quantile(FitnessQuantile):
+    ARG_NAME = "fitness_q99"
+
     def __init__(self, reporter = None):
         super().__init__(0.99, reporter)

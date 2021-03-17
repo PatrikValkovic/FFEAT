@@ -6,6 +6,7 @@
 ###############################
 from typing import Tuple, Dict, Any, Callable
 
+
 class Pipe:
     def _handle_parameter(self, value):
         if isinstance(value, Callable):

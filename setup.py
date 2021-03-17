@@ -35,9 +35,11 @@ setup(
         "ffeat/strategies/selection",
         "ffeat/utils",
         "ffeat/utils/decay",
-        "ffeat/utils/scaling"
+        "ffeat/utils/scaling",
+        "ffeat/utils/termination",
     ],
     install_requires=[
         "torch",
+        "numpy",
     ],
 )
