@@ -1,7 +1,6 @@
 ###############################
 #
 # Created by Patrik Valkovic
-# 3/11/2021
+# 3/17/2021
 #
 ###############################
-from .FlipBit import FlipBit
