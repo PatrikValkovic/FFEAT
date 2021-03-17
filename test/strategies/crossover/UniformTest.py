@@ -12,7 +12,7 @@ from ffeat.strategies import crossover
 
 class UniformTest(unittest.TestCase):
     def test_offsprings_absolute(self):
-        s = crossover.Uniform(num_offsprings=40)
+        s = crossover.Uniform(40)
         pop = t.randn(100,400)
         popc = t.clone(pop)
         (newpop,), kargs = s(popc)
@@ -22,7 +22,7 @@ class UniformTest(unittest.TestCase):
         self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
 
     def test_offsprings_fraction(self):
-        s = crossover.Uniform(fraction_offsprings=0.4)
+        s = crossover.Uniform(0.4)
         pop = t.randn(100,400)
         popc = t.clone(pop)
         (newpop,), kargs = s(popc)
@@ -32,27 +32,23 @@ class UniformTest(unittest.TestCase):
         self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
 
     def test_absolute_without_replace(self):
-        s = crossover.Uniform(num_offsprings=40, replace_parents=False)
+        s = crossover.Uniform(40, replace_parents=False)
         pop = t.randn(100,400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (140,400))
 
     def test_fraction_without_replace(self):
-        s = crossover.Uniform(fraction_offsprings=0.4, replace_parents=False)
+        s = crossover.Uniform(0.4, replace_parents=False)
         pop = t.randn(100,400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (140,400))
 
     def test_odd_offsprings(self):
         with self.assertRaises(ValueError):
-            crossover.Uniform(num_offsprings=39)
-
-    def test_offspring_count_not_set(self):
-        with self.assertRaises(ValueError):
-            crossover.Uniform()
+            crossover.Uniform(39)
 
     def test_offsprings_absolute_not_inplace(self):
-        s = crossover.Uniform(num_offsprings=40, in_place=False)
+        s = crossover.Uniform(40, in_place=False)
         pop = t.randn(100,400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (100,400))
@@ -61,7 +57,7 @@ class UniformTest(unittest.TestCase):
         self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
 
     def test_fraction_absolute_not_inplace(self):
-        s = crossover.Uniform(fraction_offsprings=0.4, in_place=False)
+        s = crossover.Uniform(0.4, in_place=False)
         pop = t.randn(100,400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (100,400))
@@ -71,7 +67,7 @@ class UniformTest(unittest.TestCase):
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_offsprings_absolute_cuda(self):
-        s = crossover.Uniform(num_offsprings=40)
+        s = crossover.Uniform(40)
         pop = t.randn(100,400, device='cuda:0')
         popc = t.clone(pop)
         (newpop,), kargs = s(popc)
@@ -79,7 +75,7 @@ class UniformTest(unittest.TestCase):
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_offsprings_fraction_cuda(self):
-        s = crossover.Uniform(fraction_offsprings=0.4)
+        s = crossover.Uniform(0.4)
         pop = t.randn(100,400, device='cuda:0')
         popc = t.clone(pop)
         (newpop,), kargs = s(popc)
@@ -87,20 +83,20 @@ class UniformTest(unittest.TestCase):
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_offsprings_absolute_not_inplace_cuda(self):
-        s = crossover.Uniform(num_offsprings=40, in_place=False)
+        s = crossover.Uniform(40, in_place=False)
         pop = t.randn(100,400, device='cuda:0')
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.device, t.device('cuda:0'))
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_fraction_absolute_not_inplace_cuda(self):
-        s = crossover.Uniform(fraction_offsprings=0.4, in_place=False)
+        s = crossover.Uniform(0.4, in_place=False)
         pop = t.randn(100,400, device='cuda:0')
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.device, t.device('cuda:0'))
 
     def test_multidimensional(self):
-        s = crossover.Uniform(num_offsprings=40)
+        s = crossover.Uniform(40)
         pop = t.randn(100,40,10,50)
         popc = t.clone(pop)
         (newpop,), kargs = s(popc)
@@ -109,7 +105,7 @@ class UniformTest(unittest.TestCase):
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_multidimensional_cuda(self):
-        s = crossover.Uniform(num_offsprings=40)
+        s = crossover.Uniform(40)
         pop = t.randn(100,40,10,50, device='cuda:0')
         popc = t.clone(pop)
         (newpop,), kargs = s(popc)
@@ -117,7 +113,7 @@ class UniformTest(unittest.TestCase):
         self.assertIs(popc, newpop)
 
     def test_multidimensional_not_inplace(self):
-        s = crossover.Uniform(num_offsprings=40, replace_parents=False)
+        s = crossover.Uniform(40, replace_parents=False)
         pop = t.randn((100,40,10,50))
         popc = t.clone(pop)
         (newpop,), kargs = s(popc)
@@ -126,7 +122,7 @@ class UniformTest(unittest.TestCase):
         self.assertTrue(t.all(popc == pop))
 
     def test_mutation_rate(self):
-        s = crossover.Uniform(num_offsprings=40, change_prob=0.1)
+        s = crossover.Uniform(40, change_prob=0.1)
         pop = t.randn(100,400)
         popc = t.clone(pop)
         (newpop,), kargs = s(popc)

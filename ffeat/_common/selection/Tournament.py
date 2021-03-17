@@ -25,11 +25,11 @@ class Tournament(Pipe):
         if not isinstance(to_select, int):
             raise ValueError(f"Number of members to select needs to be int, {type(to_select)} instead")
 
-        indices = t.randint(originally, (2, to_select), dtype=t.long, device=population.device)
+        indices = t.randint(originally, (2, to_select), dtype=t.long, device=fitnesses.device)
         comparison = fitnesses[indices[0]] < fitnesses[indices[1]]
         better = t.cat([
             indices[0, comparison],
             indices[1, t.logical_not(comparison)]
         ])
-        new_population = population[better]
+        new_population = population[better.to(population.device)]
         return (new_population, *args), kwargs

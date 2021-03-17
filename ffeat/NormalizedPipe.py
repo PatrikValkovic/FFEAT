@@ -8,7 +8,7 @@ from typing import Tuple, Any, Dict
 from .Pipe import Pipe
 
 
-class Normalize(Pipe):
+class NormalizedPipe(Pipe):
     def __call__(self, argument) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         if isinstance(argument, tuple) and \
                 len(argument) == 2 and \

@@ -4,8 +4,8 @@
 # 3/9/2021
 #
 ###############################
-
-from setuptools import setup
+from attr.filters import exclude
+from setuptools import setup, find_packages
 
 v = '1.0.0'
 # read the contents of your README file
@@ -24,20 +24,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Patrik Valkovic",
     license="GNU LGPLv3",
-    packages=[
-        "ffeat",
-        "ffeat/flow",
-        "ffeat/measure",
-        "ffeat/measure/reporting",
-        "ffeat/strategies",
-        "ffeat/strategies/crossover",
-        "ffeat/strategies/mutation",
-        "ffeat/strategies/selection",
-        "ffeat/utils",
-        "ffeat/utils/decay",
-        "ffeat/utils/scaling",
-        "ffeat/utils/termination",
-    ],
+    packages=find_packages(include=('ffeat*',)),
     install_requires=[
         "torch",
         "numpy",

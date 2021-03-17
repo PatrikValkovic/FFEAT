@@ -1,27 +1,24 @@
 ###############################
 #
 # Created by Patrik Valkovic
-# 3/11/2021
+# 3/17/2021
 #
 ###############################
-from typing import Tuple, Any, Dict
+from typing import Tuple, Any, Dict, Union
 import torch as t
 from ffeat import Pipe
 
 
 # TODO what to do with multiple dimensions
+# TODO make sure same probability applies to all the cuts
 class TwoPoint1D(Pipe):
     def __init__(self,
-                 num_offsprings: int = None,
-                 fraction_offsprings: float = None,
+                 offsprings: Union[int, float],
                  replace_parents: bool = True,
                  in_place: bool = True):
-        if num_offsprings is None and fraction_offsprings is None:
-            raise ValueError("Either number of offsprings or a percentage must be provided")
-        if num_offsprings is not None and num_offsprings % 2 != 0:
+        if isinstance(offsprings, int) and offsprings % 2 != 0:
             raise ValueError("Number of offsprings must be even")
-        self._num_offsprings = num_offsprings
-        self._fraction_offsprings = fraction_offsprings
+        self._offsprings = offsprings
         self.replace_parents = replace_parents
         self.in_place = in_place
 
@@ -31,13 +28,13 @@ class TwoPoint1D(Pipe):
         dev = population.device
         num_parents = len(population)
         dim = population.shape[1]
-        num_crossovers = self._num_offsprings // 2 if self._num_offsprings is not None else int(len(population) * self._fraction_offsprings / 2.0)
+        num_crossovers = self._offsprings // 2 if isinstance(self._offsprings, int) else int(len(population) * self._offsprings / 2.0)
         num_children = num_crossovers * 2
 
         first_crossover = t.randint(dim - 2, size=(num_crossovers,), dtype=itp, device=dev) + 1
         second_crossover = t.rand(num_crossovers, device=dev)
         second_crossover = t.multiply(second_crossover, dim - first_crossover - 1, out=second_crossover)
-        second_crossover = second_crossover.type(itp).add_(1).add_(first_crossover)
+        second_crossover = second_crossover.add_(1).add_(first_crossover).type(itp)
         parents_indices = t.randint(num_parents, (2, num_crossovers), dtype=itp, device=dev)
         children = t.zeros((num_children, dim), dtype=ptp, device=dev)
 

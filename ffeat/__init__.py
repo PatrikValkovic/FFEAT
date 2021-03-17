@@ -6,7 +6,7 @@
 ###############################
 
 from .Pipe import Pipe
-from .Normalize import Normalize
+from .NormalizedPipe import NormalizedPipe
 from . import flow
 from . import strategies
 from . import measure

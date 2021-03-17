@@ -9,6 +9,7 @@ import torch as t
 import ffeat
 from ffeat.strategies import selection
 
+
 class TournamentTest(unittest.TestCase):
     def test_absolute(self):
         s = selection.Tournament(40)

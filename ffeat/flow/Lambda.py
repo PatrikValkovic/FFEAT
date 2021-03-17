@@ -5,10 +5,10 @@
 #
 ###############################
 from typing import Tuple, Any, Dict, Callable
-from ffeat import Normalize
+from ffeat import NormalizedPipe
 
 
-class Lambda(Normalize):
+class Lambda(NormalizedPipe):
     def __init__(self, _lambda: Callable):
         self._lambda = _lambda
 

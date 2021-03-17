@@ -5,8 +5,8 @@
 #
 ###############################
 
-from .OnePoint1D import OnePoint1D
-from .Uniform import Uniform
+from ffeat._common.crossover.Uniform import Uniform
+from ffeat._common.crossover.OnePoint1D import OnePoint1D
+from ffeat._common.crossover.TwoPoint1D import TwoPoint1D
 from .Arithmetic import Arithmetic
-from .TwoPoint1D import TwoPoint1D
 from .Differential import Differential, DifferentialWithFitness

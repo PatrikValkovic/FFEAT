@@ -98,7 +98,7 @@ class StochasticUniversalSamplingTest(unittest.TestCase):
             ffeat.utils.scaling.LogScale(0.1, 10.0),
             ffeat.strategies.selection.StochasticUniversalSampling(1.0),
             ffeat.strategies.mutation.AddFromNormal(0.1, 0.1),
-            ffeat.strategies.crossover.OnePoint1D(fraction_offsprings=0.4, replace_parents=True),
+            ffeat.strategies.crossover.OnePoint1D(0.4, replace_parents=True),
             iterations=1000
         )
         (pop,), kargs = alg()

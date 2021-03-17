@@ -7,7 +7,7 @@
 import unittest
 import ffeat
 
-class AddPipe(ffeat.Normalize):
+class AddPipe(ffeat.NormalizedPipe):
     def __call__(self, argument, **kwargs):
         return super().__call__(argument+1)
 

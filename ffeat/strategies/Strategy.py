@@ -8,7 +8,6 @@ from typing import Tuple, Any, Dict
 from ffeat import Pipe, flow
 
 
-# TODO expand
 class Strategy(Pipe):
     def __init__(self,
                  initialization: Pipe,
