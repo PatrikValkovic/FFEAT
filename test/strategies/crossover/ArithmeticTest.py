@@ -147,7 +147,7 @@ class ArithmeticTest(unittest.TestCase):
                 val = super().__call__(*args, iteration=iteration, max_iteration=max_iteration, **kwargs)
                 return t.distributions.Normal(0.5, val)
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
-        alg = ffeat.strategies.Strategy(
+        alg = ffeat.strategies.EvolutionStrategy(
             ffeat.strategies.initialization.Uniform(100, -5.0, 5.0, 40),
             ffeat.strategies.evaluation.Evaluation(_f),
             ffeat.strategies.selection.Tournament(1.0),

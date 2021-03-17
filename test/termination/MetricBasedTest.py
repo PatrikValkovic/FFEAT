@@ -17,7 +17,7 @@ class StdBelowTest(unittest.TestCase):
             nonlocal executed
             executed += 1
             return t.full((100,), abs(executed - 50), dtype=t.float32)
-        ffeat.strategies.Strategy(
+        ffeat.strategies.EvolutionStrategy(
             ffeat.strategies.initialization.Uniform(100, -5, 5, 40),
             ffeat.strategies.evaluation.Evaluation(_fn),
             ffeat.measure.FitnessMean(),
@@ -35,7 +35,7 @@ class StdBelowTest(unittest.TestCase):
             nonlocal executed
             executed += 1
             return t.full((100,), abs(executed - 50), dtype=t.float32)
-        ffeat.strategies.Strategy(
+        ffeat.strategies.EvolutionStrategy(
             ffeat.strategies.initialization.Uniform(100, -5, 5, 40),
             ffeat.strategies.evaluation.Evaluation(_fn),
             ffeat.measure.FitnessMean(),
@@ -53,7 +53,7 @@ class StdBelowTest(unittest.TestCase):
             nonlocal executed
             executed += 1
             return t.ones((1000,), dtype=t.float32) / executed
-        ffeat.strategies.Strategy(
+        ffeat.strategies.EvolutionStrategy(
             ffeat.strategies.initialization.Uniform(1000, -5, 5, 40),
             ffeat.strategies.evaluation.Evaluation(_fn),
             ffeat.measure.FitnessMean(),
@@ -66,7 +66,7 @@ class StdBelowTest(unittest.TestCase):
         self.assertEqual(executed, 36)
 
     def test_base_metric_not_implemented(self):
-        alg = ffeat.strategies.Strategy(
+        alg = ffeat.strategies.EvolutionStrategy(
             ffeat.strategies.initialization.Uniform(1000, -5, 5, 40),
             ffeat.strategies.evaluation.Evaluation(lambda x: t.sum(x ** 2, dim=-1)),
             ffeat.measure.FitnessMean(),
@@ -80,7 +80,7 @@ class StdBelowTest(unittest.TestCase):
             alg()
 
     def test_missing_measurement(self):
-        alg = ffeat.strategies.Strategy(
+        alg = ffeat.strategies.EvolutionStrategy(
             ffeat.strategies.initialization.Uniform(1000, -5, 5, 40),
             ffeat.strategies.evaluation.Evaluation(lambda x: t.sum(x ** 2, dim=-1)),
             ffeat.utils.termination.StdBellow(

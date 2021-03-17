@@ -12,7 +12,7 @@ import ffeat
 class StrategyTest(unittest.TestCase):
     def test_simple(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
-        alg = ffeat.strategies.Strategy(
+        alg = ffeat.strategies.EvolutionStrategy(
             ffeat.strategies.initialization.Uniform(100, -5.0, 5.0, 40),
             ffeat.strategies.evaluation.Evaluation(_f),
             ffeat.strategies.selection.Tournament(1.0),
@@ -26,7 +26,7 @@ class StrategyTest(unittest.TestCase):
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_simple_cuda(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
-        alg = ffeat.strategies.Strategy(
+        alg = ffeat.strategies.EvolutionStrategy(
             ffeat.strategies.initialization.Uniform(100, -5.0, 5.0, 40, device='cuda:0'),
             ffeat.strategies.evaluation.Evaluation(_f),
             ffeat.strategies.selection.Tournament(1.0),

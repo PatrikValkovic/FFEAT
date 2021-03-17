@@ -8,4 +8,4 @@
 from .Initialization import Initialization as initialization
 from . import selection, crossover, mutation
 from ffeat._common.Evaluation import EvalWrapper as evaluation
-from ffeat._common.AlgorithmSkeleton import AlgorithmSkeleton as EvolutionStrategy
+from ffeat._common.AlgorithmSkeleton import AlgorithmSkeleton as GeneticAlgorithm

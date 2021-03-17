@@ -19,10 +19,14 @@ class Evaluation(Pipe):
         return (f, population, *args), kwargs
 
 
-class EvaluationIndividually(Evaluation):
+class RowEval(Evaluation):
     def __init__(self, evaluation_fn: Callable):
         super().__init__(
             lambda pop: t.stack([
                 evaluation_fn(x) for x in t.unbind(pop, dim=0)
             ], dim=0)
         )
+
+class EvalWrapper:
+    Evaluation = Evaluation
+    RowEval = RowEval

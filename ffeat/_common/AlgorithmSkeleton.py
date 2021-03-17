@@ -1,14 +1,14 @@
 ###############################
 #
 # Created by Patrik Valkovic
-# 3/12/2021
+# 3/17/2021
 #
 ###############################
 from typing import Tuple, Any, Dict
 from ffeat import Pipe, flow
 
 
-class Strategy(Pipe):
+class AlgorithmSkeleton(Pipe):
     def __init__(self,
                  initialization: Pipe,
                  *steps: Pipe,
