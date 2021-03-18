@@ -4,7 +4,7 @@
 # 3/18/2021
 #
 ###############################
-from typing import Tuple, Any, Dict
+from typing import Tuple, Any, Dict, List
 import math
 import torch as t
 from ffeat import Pipe, flow
@@ -21,6 +21,7 @@ class PSO(Pipe):
                  evaluation: Pipe,
                  neighborhood_definition: Neighborhood,
                  velocity_update: Update,
+                 measurements: List[Pipe] = None,
                  iterations: int = 100):
         self.__flow = flow.Sequence(
             flow.Parallel(
@@ -30,15 +31,16 @@ class PSO(Pipe):
             # position, velocities
             flow.Concat(
                 lambda pop, *_, **__: ((t.full((len(pop),), math.inf, device=pop.device),), {}),
-                lambda pop, *_, **__: ((t.full(pop.shape[1:], 0, device=pop.device, dtype=pop.dtype),), {}),
+                lambda pop, *_, **__: ((t.full(pop.shape, 0, device=pop.device, dtype=pop.dtype),), {}),
                 lambda pop, *_, **__: ((t.full((len(pop),), math.inf, device=pop.device),), {}),
-                lambda pop, *_, **__: ((t.full(pop.shape[1:], 0, device=pop.device, dtype=pop.dtype),), {}),
+                lambda pop, *_, **__: ((t.full(pop.shape, 0, device=pop.device, dtype=pop.dtype),), {}),
             ),
             # position, velocities, fitness_gbest, positions_gbest, fintess_lbest, positions_lbest
             flow.Repeat(
                 flow.Sequence(
                     # position, velocities, fitness_gbest, positions_gbest, fintess_lbest, positions_lbest
                     evaluation,
+                    *(measurements or []),
                     # fitness, position, velocities, fitness_gbest, positions_gbest, fitness_lbest, positions_lbest
                     flow.Replace(
                         flow.Sequence(
@@ -70,7 +72,10 @@ class PSO(Pipe):
                 max_iterations=iterations,
                 loop_arguments=True,
                 identifier='ffeat'
-            )
+            ),
+            # position, velocities, fitness_gbest, positions_gbest, fitness_lbest, positions_lbest
+            flow.Select(0),
+            # position
         )
 
     def __call__(self, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
