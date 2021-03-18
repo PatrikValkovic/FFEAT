@@ -12,3 +12,4 @@ from . import measure
 from . import utils
 from . import strategies
 from . import genetic
+from . import pso
