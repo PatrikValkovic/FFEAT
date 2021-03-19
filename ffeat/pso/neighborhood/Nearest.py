@@ -9,7 +9,6 @@ import torch as t
 from .Neighborhood import Neighborhood
 
 
-# TODO
 class Nearest(Neighborhood):
     def __init__(self,
                  size: Union[int, Callable[..., int]],
