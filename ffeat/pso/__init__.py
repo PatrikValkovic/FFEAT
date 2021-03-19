@@ -9,3 +9,4 @@ from . import update
 from . import neighborhood
 from .Initialization import Initialization as initialization
 from ffeat._common.Evaluation import EvalWrapper as evaluation
+from . import clip

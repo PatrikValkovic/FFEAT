@@ -22,7 +22,7 @@ class PSO2011(Update):
         self._local_c = self._handle_parameter(local_c)
         self._global_c = self._handle_parameter(global_c)
 
-    def __call__(self, *args, **kwargs) -> Tuple[Tuple[t.Tensor, t.Tensor], Dict[str, Any]]:
+    def __call__(self, *args, **kwargs) -> Tuple[Tuple[t.Tensor], Dict[str, Any]]:
         position, velocities, fitness_gbest, positions_gbest, fitness_lbest, positions_lbest = args
         pop_size = len(position)
         ptype = position.dtype
@@ -72,6 +72,5 @@ class PSO2011(Update):
         )
 
         velocities.add_(samples).add_(G)
-        position = t.add(position, velocities, out=position)
 
-        return (position, velocities), kwargs
+        return (velocities,), kwargs

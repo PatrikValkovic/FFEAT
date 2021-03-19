@@ -22,7 +22,7 @@ class PSO2006(Update):
         self._local_c = self._handle_parameter(local_c)
         self._global_c = self._handle_parameter(global_c)
 
-    def __call__(self, *args, **kwargs) -> Tuple[Tuple[t.Tensor, t.Tensor], Dict[str, Any]]:
+    def __call__(self, *args, **kwargs) -> Tuple[Tuple[t.Tensor], Dict[str, Any]]:
         position, velocities, fitness_gbest, positions_gbest, fitness_lbest, positions_lbest = args
         pop_size = len(position)
         ptype = position.dtype
@@ -38,10 +38,10 @@ class PSO2006(Update):
             global_c = t.distributions.Uniform(0.0, global_c)
 
         if isinstance(inertia, float):
-            velocities = t.multiply(t.tensor(inertia, dtype=ptype, device=dev), velocities, out=velocities)
+            velocities.multiply_(inertia)
         else:
             inertia = inertia.sample((pop_size,)).to(dev).type(ptype)
-            velocities = t.multiply(inertia, velocities, out=velocities)
+            velocities.multiply_(inertia)
 
         local_c = local_c.sample((pop_size,)).to(dev).type(ptype)
         local_shift = positions_lbest - position
@@ -63,11 +63,4 @@ class PSO2006(Update):
         velocities.add_(global_shift)
         del global_c
 
-        position = t.add(position, velocities, out=position)
-
-        return (position, velocities), kwargs
-
-
-
-
-
+        return (velocities,), kwargs

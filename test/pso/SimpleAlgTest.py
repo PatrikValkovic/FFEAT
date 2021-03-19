@@ -18,7 +18,9 @@ class SimpleAlgTest(unittest.TestCase):
             pso.evaluation.Evaluation(fn),
             pso.neighborhood.Random(3),
             pso.update.PSO2011(local_c=0.2, global_c=0.3, inertia=0.8),
-            iterations=500
+            iterations=500,
+            clip_position=pso.clip.Position(-5,5),
+            clip_velocity=pso.clip.VelocityNorm(1.0),
         )
         (pop,), kwargs = alg()
         self.assertTrue(t.all(fn(pop) < 1.0))
@@ -32,7 +34,9 @@ class SimpleAlgTest(unittest.TestCase):
             pso.evaluation.Evaluation(fn),
             pso.neighborhood.Random(3),
             pso.update.PSO2011(local_c=0.2, global_c=0.3, inertia=0.8),
-            iterations=500
+            iterations=500,
+            clip_position=pso.clip.Position(-5, 5),
+            clip_velocity=pso.clip.VelocityValue(-1.0, 1.0),
         )
         (pop,), kwargs = alg()
         self.assertTrue(t.all(fn(pop) < 1.0))

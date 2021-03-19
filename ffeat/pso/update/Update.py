@@ -12,5 +12,5 @@ from ffeat import Pipe
 class Update(Pipe):
     def __call__(self, position, velocities,
                  fitness_gbest, positions_gbest,
-                 fitness_lbest, positions_lbest, **kwargs) -> Tuple[Tuple[t.Tensor, t.Tensor], Dict[str, Any]]:
+                 fitness_lbest, positions_lbest, **kwargs) -> Tuple[Tuple[t.Tensor], Dict[str, Any]]:
         raise NotImplementedError()
