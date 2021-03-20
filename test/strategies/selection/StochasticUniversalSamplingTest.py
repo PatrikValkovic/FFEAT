@@ -8,6 +8,7 @@ import unittest
 import torch as t
 import ffeat
 from ffeat.strategies import selection
+from test.repeat import repeat
 
 
 class StochasticUniversalSamplingTest(unittest.TestCase):
@@ -89,6 +90,7 @@ class StochasticUniversalSamplingTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             s(fitness, pop)
 
+    @repeat(5)
     def test_in_alg(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
         alg = ffeat.strategies.EvolutionStrategy(

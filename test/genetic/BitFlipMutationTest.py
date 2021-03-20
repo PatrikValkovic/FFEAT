@@ -9,6 +9,7 @@ import torch as t
 import ffeat
 from ffeat._common.initialization.Uniform import UniformInit
 from ffeat.genetic import mutation
+from test.repeat import repeat
 
 
 class BitFlipMutationTest(unittest.TestCase):
@@ -100,6 +101,7 @@ class BitFlipMutationTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             m(pop)
 
+    @repeat(5)
     def test_in_alg_unsigned(self):
         fn = lambda x: t.sum(x, dim=-1, dtype=t.int32)
         a = ffeat.genetic.GeneticAlgorithm(
@@ -111,6 +113,7 @@ class BitFlipMutationTest(unittest.TestCase):
         (pop,), kargs = a()
         self.assertTrue(t.all(fn(pop) < 5))
 
+    @repeat(5)
     def test_in_alg_signed(self):
         fn = lambda x: t.sum(x, dim=-1, dtype=t.int32)
         a = ffeat.genetic.GeneticAlgorithm(
@@ -123,6 +126,7 @@ class BitFlipMutationTest(unittest.TestCase):
         self.assertTrue(t.all(fn(pop) < 5))
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
+    @repeat(5)
     def test_in_alg_unsigned_cuda(self):
         fn = lambda x: t.sum(x, dim=-1, dtype=t.int32)
         a = ffeat.genetic.GeneticAlgorithm(
@@ -136,6 +140,7 @@ class BitFlipMutationTest(unittest.TestCase):
         self.assertEqual(pop.device, t.device('cuda:0'))
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
+    @repeat(5)
     def test_in_alg_signed_cuda(self):
         fn = lambda x: t.sum(x, dim=-1, dtype=t.int32)
         a = ffeat.genetic.GeneticAlgorithm(

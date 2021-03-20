@@ -108,6 +108,8 @@ class _Grid2D(_Grid):
 
 class Grid2D(Static):
     def __init__(self, type: Literal["linear", "compact", "diamond"], size: int, shape: Tuple[int, ...]):
+        if len(shape) != 2:
+            raise ValueError("Not a 2D grid type")
         super().__init__(_Grid2D(type, size, shape))
 
 

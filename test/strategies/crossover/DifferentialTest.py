@@ -8,6 +8,7 @@ import unittest
 import torch as t
 import ffeat
 from ffeat.strategies import crossover, evaluation
+from test.repeat import repeat
 
 
 class DifferentialTest(unittest.TestCase):
@@ -115,6 +116,7 @@ class DifferentialTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             crossover.Differential()
 
+    @repeat(5)
     def test_in_alg(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
         alg = ffeat.strategies.EvolutionStrategy(
@@ -132,6 +134,7 @@ class DifferentialTest(unittest.TestCase):
         self.assertTrue(t.all(_f(pop) < 1))
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
+    @repeat(5)
     def test_in_alg_cuda(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
         alg = ffeat.strategies.EvolutionStrategy(
@@ -149,6 +152,7 @@ class DifferentialTest(unittest.TestCase):
         self.assertTrue(t.all(_f(pop) < 1))
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
+    @repeat(5)
     def test_in_alg_cuda_replace_better(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
         alg = ffeat.strategies.EvolutionStrategy(
@@ -165,6 +169,7 @@ class DifferentialTest(unittest.TestCase):
         (pop,), kargs = alg()
         self.assertTrue(t.all(_f(pop) < 1))
 
+    @repeat(5)
     def test_in_alg_replace_better_with_fitness(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
         alg = ffeat.strategies.EvolutionStrategy(
@@ -182,6 +187,7 @@ class DifferentialTest(unittest.TestCase):
         self.assertTrue(t.all(_f(pop) < 1))
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
+    @repeat(5)
     def test_in_alg_replace_better_with_fitness_cuda(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
         alg = ffeat.strategies.EvolutionStrategy(

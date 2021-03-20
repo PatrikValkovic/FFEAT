@@ -51,8 +51,9 @@ class PSO2011(Update):
         G = t.clone(local_shift)
         del local_c
 
-        global_c = global_c.sample((pop_size,)).to(dev).type(ptype)
-        global_shift = t.subtract(positions_gbest, position)
+        global_c = global_c.sample((pop_size,)).to(dev)  # type: t.Tensor
+        global_shift = global_c.new_empty(position.shape, dtype=t.float32, device=dev)
+        global_shift = t.subtract(positions_gbest, position, out=global_shift)
         global_shift.multiply_(
             global_c.reshape(pop_size, *([1] * dimensions)),
         )
@@ -64,7 +65,7 @@ class PSO2011(Update):
         samples.divide_(
             t.norm(samples, dim=list(range(1,dimensions+1))).reshape(pop_size, *([1] * dimensions)),
         )
-        samples_multiply = t.rand(samples.shape, dtype=global_shift.dtype, device=dev, out=global_shift)
+        samples_multiply = t.rand(samples.shape, dtype=t.float32, device=dev, out=global_shift)
         samples_multiply.pow_(1.0 / math.prod(samples.shape[1:]))
         samples.multiply_(samples_multiply)
         samples.multiply_(

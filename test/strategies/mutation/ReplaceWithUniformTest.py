@@ -8,6 +8,7 @@ import unittest
 import torch as t
 import ffeat
 from ffeat.strategies import mutation
+from test.repeat import repeat
 
 
 class ReplaceWithUniformTest(unittest.TestCase):
@@ -105,6 +106,7 @@ class ReplaceWithUniformTest(unittest.TestCase):
         self.assertEqual(newpop.shape, (1000,7))
         self.assertIs(pop, newpop)
 
+    @repeat(5)
     def test_in_alg(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
         alg = ffeat.strategies.EvolutionStrategy(
@@ -121,6 +123,7 @@ class ReplaceWithUniformTest(unittest.TestCase):
         self.assertTrue(t.all(_f(pop) < 1))
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
+    @repeat(5)
     def test_in_alg_cuda(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
         alg = ffeat.strategies.EvolutionStrategy(

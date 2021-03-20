@@ -8,6 +8,7 @@ import unittest
 import torch as t
 import ffeat
 from ffeat.strategies import crossover
+from test.repeat import repeat
 
 
 class OnePoint1DTest(unittest.TestCase):
@@ -95,6 +96,7 @@ class OnePoint1DTest(unittest.TestCase):
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.device, t.device('cuda:0'))
 
+    @repeat(5)
     def test_in_alg(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
         alg = ffeat.strategies.EvolutionStrategy(

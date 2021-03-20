@@ -8,6 +8,7 @@ import unittest
 import torch as t
 import ffeat
 from ffeat.strategies import mutation, evaluation
+from test.repeat import repeat
 
 
 class AddFromNormTest(unittest.TestCase):
@@ -124,6 +125,7 @@ class AddFromNormTest(unittest.TestCase):
         self.assertLess(t.sum(newfitness == 0), len(better_indices))
         self.assertLess(t.sum(t.any(newpop != old_pop, dim=-1)), len(better_indices))
 
+    @repeat(5)
     def test_in_alg(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
         alg = ffeat.strategies.EvolutionStrategy(
@@ -143,6 +145,7 @@ class AddFromNormTest(unittest.TestCase):
         self.assertTrue(t.all(_f(pop) < 1))
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
+    @repeat(5)
     def test_in_alg_cuda(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
         alg = ffeat.strategies.EvolutionStrategy(

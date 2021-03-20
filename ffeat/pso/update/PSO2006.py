@@ -41,7 +41,7 @@ class PSO2006(Update):
             velocities.multiply_(inertia)
         else:
             inertia = inertia.sample((pop_size,)).to(dev).type(ptype)
-            velocities.multiply_(inertia)
+            velocities.multiply_(inertia.reshape((pop_size, *([1] * dimensions))))
 
         local_c = local_c.sample((pop_size,)).to(dev).type(ptype)
         local_shift = positions_lbest - position

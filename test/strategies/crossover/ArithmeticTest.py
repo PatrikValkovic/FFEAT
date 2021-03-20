@@ -9,6 +9,7 @@ import torch as t
 import ffeat
 from ffeat.strategies import crossover
 from ffeat.utils import decay
+from test.repeat import repeat
 
 
 class ArithmeticTest(unittest.TestCase):
@@ -141,6 +142,7 @@ class ArithmeticTest(unittest.TestCase):
         (newpop,), kargs = s(popc, iteration=14, max_iteration=100)
         self.assertEqual(newpop.shape, (100,400))
 
+    @repeat(5)
     def test_in_alg(self):
         class NormalStdCallback(decay.Linear):
             def __call__(self, *args, iteration: int, max_iteration: int = None, **kwargs):

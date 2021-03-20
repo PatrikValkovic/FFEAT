@@ -9,6 +9,7 @@ import torch as t
 import ffeat
 from ffeat.strategies import selection
 from ffeat.utils import decay
+from test.repeat import repeat
 
 
 class ElitismTest(unittest.TestCase):
@@ -84,6 +85,7 @@ class ElitismTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             s(fitness, pop, iteration=13, max_iteration=23)
 
+    @repeat(5)
     def test_in_alg(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
         alg = ffeat.strategies.EvolutionStrategy(
@@ -100,6 +102,7 @@ class ElitismTest(unittest.TestCase):
         self.assertTrue(t.all(_f(pop) < 1))
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
+    @repeat(5)
     def test_in_alg_cuda(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
         alg = ffeat.strategies.EvolutionStrategy(
@@ -114,8 +117,6 @@ class ElitismTest(unittest.TestCase):
         )
         (pop,), kargs = alg()
         self.assertTrue(t.all(_f(pop) < 1))
-
-
 
 
 if __name__ == '__main__':
