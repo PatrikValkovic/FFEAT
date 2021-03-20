@@ -39,17 +39,17 @@ class UniformInit(Pipe):
         if isinstance(self.__min, t.Tensor):
             device = self.device = self.__min.device
         if not isinstance(self.__max, t.Tensor) and isinstance(self.__max, list):
-            self.__max = t.tensor(self.__max, dtype=dtype, device=device)
+            self.__max = t.tensor(self.__max, device=device)
             self.__dimension = self.__max.shape
         if not isinstance(self.__min, t.Tensor) and isinstance(self.__min, list):
-            self.__min = t.tensor(self.__min, dtype=dtype, device=device)
+            self.__min = t.tensor(self.__min, device=device)
             self.__dimension = self.__min.shape
         if self.__dimension is None:
             raise ValueError("Dimension not specified, either use dimension parameter or specify dimension of either max or min")
         if not isinstance(self.__max, t.Tensor):
-            self.__max = t.full(self.__dimension, self.__max, dtype=dtype, device=device)
+            self.__max = t.full(self.__dimension, self.__max, device=device)
         if not isinstance(self.__min, t.Tensor):
-            self.__min = t.full(self.__dimension, self.__min, dtype=dtype, device=device)
+            self.__min = t.full(self.__dimension, self.__min, device=device)
         if self.__max.shape != self.__max.shape or self.__max.shape != self.__dimension or self.__min.shape != self.__dimension:
             raise ValueError("Provided dimensions do not match")
         if t.any(self.__max < self.__min):

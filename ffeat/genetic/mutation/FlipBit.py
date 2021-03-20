@@ -36,11 +36,8 @@ class FlipBit(Pipe):
 
         mutation_map = (t.rand((to_mutate,*dim), device=dev) < mutation_prob).to(population.dtype)
         parent_indices = t.randperm(pop_size, device=dev, dtype=t.long)[:to_mutate]
-        offsprings = t.subtract(mutation_map, population[parent_indices], out=mutation_map)
-        if offsprings.dtype.is_signed:
-            offsprings = t.abs(offsprings, out=offsprings)
-        else:
-            offsprings = t.minimum(offsprings, t.tensor(1), out=offsprings)
+        offsprings = t.bitwise_xor(mutation_map, population[parent_indices], out=mutation_map)
+
         if self.in_place:
             population[parent_indices] = offsprings
         else:
