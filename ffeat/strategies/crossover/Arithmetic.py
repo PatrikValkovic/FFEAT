@@ -44,8 +44,9 @@ class Arithmetic(Pipe):
         if isinstance(parent_weights, float):
             parent_weights = t.distributions.Uniform(parent_weights-1e-7, parent_weights+1e-7)
 
+        # TODO make sure weights corresponds
         parents_indices = t.randint(pop_len, (num_parents * num_children,), dtype=itp, device=dev)
-        parents_weights = parent_weights.sample(parents_indices.shape).type(ptp).to(dev)
+        parents_weights = parent_weights.sample((num_children, num_parents)).type(ptp).to(dev)
         parents = population[parents_indices] * t.reshape(parents_weights, (num_parents * num_children, *([1] * len(dim))))
         children = t.sum(parents.reshape((num_children, num_parents, *dim)), dim=1)
 

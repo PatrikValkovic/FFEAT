@@ -10,7 +10,6 @@ from ffeat import Pipe
 
 
 # TODO what to do with multiple dimensions
-# TODO make sure same probability applies to all the cuts
 class TwoPoint1D(Pipe):
     def __init__(self,
                  offsprings: Union[int, float],
@@ -31,7 +30,24 @@ class TwoPoint1D(Pipe):
         num_crossovers = self._offsprings // 2 if isinstance(self._offsprings, int) else int(len(population) * self._offsprings / 2.0)
         num_children = num_crossovers * 2
 
-        first_crossover = t.randint(dim - 2, size=(num_crossovers,), dtype=itp, device=dev) + 1
+        total = int((dim-1) * (dim - 2) / 2)
+        first_crossover = t.rand(num_crossovers, device=dev)
+        b = 2 * (dim - 2) + 1
+        D = t.subtract(
+            t.tensor(b ** 2, dtype=first_crossover.dtype, device=dev),
+            first_crossover,
+            alpha=total * 8,
+            out=first_crossover
+        )
+        D.sqrt_()
+        first_crossover = t.subtract(
+            t.tensor(b / 2, dtype=first_crossover.dtype, device=dev),
+            first_crossover,
+            alpha=0.5,
+            out=D
+        ).type(t.long)
+        first_crossover.add_(1)
+
         second_crossover = t.rand(num_crossovers, device=dev)
         second_crossover = t.multiply(second_crossover, dim - first_crossover - 1, out=second_crossover)
         second_crossover = second_crossover.add_(1).add_(first_crossover).type(itp)
