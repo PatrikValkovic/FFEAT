@@ -13,3 +13,4 @@ from . import utils
 from . import strategies
 from . import genetic
 from . import pso
+from . import cma

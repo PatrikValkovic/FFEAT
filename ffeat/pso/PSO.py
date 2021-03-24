@@ -24,7 +24,7 @@ class PSO(Pipe):
                  evaluation: Pipe,
                  neighborhood_definition: Neighborhood,
                  velocity_update: Update,
-                 measurements: List[Pipe] = None,
+                 measurements_termination: List[Pipe] = None,
                  clip_velocity: _Velocity = None,
                  clip_position: Position = None,
                  iterations: int = 100):
@@ -45,7 +45,7 @@ class PSO(Pipe):
                 flow.Sequence(
                     # position, velocities, fitness_gbest, positions_gbest, fintess_lbest, positions_lbest
                     evaluation,
-                    *(measurements or []),
+                    *(measurements_termination or []),
                     # fitness, position, velocities, fitness_gbest, positions_gbest, fitness_lbest, positions_lbest
                     flow.Replace(
                         flow.Sequence(
