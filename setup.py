@@ -4,7 +4,6 @@
 # 3/9/2021
 #
 ###############################
-from attr.filters import exclude
 from setuptools import setup, find_packages
 
 v = '1.0.0'
