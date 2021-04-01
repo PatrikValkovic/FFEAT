@@ -14,7 +14,7 @@ from test.repeat import repeat
 
 class ArithmeticTest(unittest.TestCase):
     def test_offsprings_absolute(self):
-        s = crossover.Arithmetic(num_offsprings=40)
+        s = crossover.Arithmetic(40)
         pop = t.randn(100,400)
         popc = t.clone(pop)
         (newpop,), kargs = s(popc)
@@ -24,7 +24,7 @@ class ArithmeticTest(unittest.TestCase):
         self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
 
     def test_offsprings_fraction(self):
-        s = crossover.Arithmetic(fraction_offsprings=0.4)
+        s = crossover.Arithmetic(0.4)
         pop = t.randn(100,400)
         popc = t.clone(pop)
         (newpop,), kargs = s(popc)
@@ -34,35 +34,31 @@ class ArithmeticTest(unittest.TestCase):
         self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
 
     def test_absolute_without_replace(self):
-        s = crossover.Arithmetic(num_offsprings=40, replace_parents=False)
+        s = crossover.Arithmetic(40, replace_parents=False)
         pop = t.randn(100,400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (140,400))
 
     def test_fraction_without_replace(self):
-        s = crossover.Arithmetic(fraction_offsprings=0.4, replace_parents=False)
+        s = crossover.Arithmetic(0.4, replace_parents=False)
         pop = t.randn(100,400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (140,400))
 
     def test_odd_offsprings(self):
-        s = crossover.Arithmetic(num_offsprings=39)
+        s = crossover.Arithmetic(39)
         pop = t.randn(100, 400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (100, 400))
 
     def test_odd_offsprings_replace(self):
-        s = crossover.Arithmetic(num_offsprings=39, replace_parents=False)
+        s = crossover.Arithmetic(39, replace_parents=False)
         pop = t.randn(100, 400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (139, 400))
 
-    def test_offspring_count_not_set(self):
-        with self.assertRaises(ValueError):
-            crossover.Arithmetic()
-
     def test_offsprings_absolute_not_inplace(self):
-        s = crossover.Arithmetic(num_offsprings=40, in_place=False)
+        s = crossover.Arithmetic(40, in_place=False)
         pop = t.randn(100,400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (100,400))
@@ -71,7 +67,7 @@ class ArithmeticTest(unittest.TestCase):
         self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
 
     def test_fraction_absolute_not_inplace(self):
-        s = crossover.Arithmetic(fraction_offsprings=0.4, in_place=False)
+        s = crossover.Arithmetic(0.4, in_place=False)
         pop = t.randn(100,400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (100,400))
@@ -80,52 +76,54 @@ class ArithmeticTest(unittest.TestCase):
         self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
 
     def test_multiple_parents(self):
-        s = crossover.Arithmetic(num_parents=7, num_offsprings=40)
+        s = crossover.Arithmetic(num_parents=7, offsprings=40)
         pop = t.randn(100,400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (100,400))
 
     def test_custom_weight_float(self):
-        s = crossover.Arithmetic(num_parents=5, num_offsprings=40, parent_weight=1/5)
+        s = crossover.Arithmetic(num_parents=5, offsprings=40, parent_weight=1 / 5)
         pop = t.randn(100,400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (100,400))
 
     def test_custom_weight_dist(self):
-        s = crossover.Arithmetic(num_parents=3, num_offsprings=40, parent_weight=t.distributions.Normal(1/3, 1))
+        s = crossover.Arithmetic(num_parents=3, offsprings=40, parent_weight=t.distributions.Normal(1 / 3, 1))
         pop = t.randn(100,400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (100,400))
 
     def test_multiple_parents_noreplace(self):
-        s = crossover.Arithmetic(num_parents=7, num_offsprings=40, replace_parents=False)
+        s = crossover.Arithmetic(num_parents=7, offsprings=40, replace_parents=False)
         pop = t.randn(100,400)
         (newpop,), kargs = s(pop)
         self.assertEqual(newpop.shape, (140,400))
 
     def test_more_dimensions(self):
-        s = crossover.Arithmetic(num_offsprings=40)
+        s = crossover.Arithmetic(offsprings=40)
         pop = t.randn(100,17,13)
         popc = t.clone(pop)
         (newpop,), kargs = s(popc)
         self.assertEqual(newpop.shape, (100,17,13))
 
+    @unittest.skip('Not implemented yet')
     def test_absolute_offsprings_callback(self):
-        s = crossover.Arithmetic(num_offsprings=decay.Linear(60,40,result_type=int))
+        s = crossover.Arithmetic(decay.Linear(60, 40, result_type=int))
         pop = t.randn(100,400)
         popc = t.clone(pop)
         (newpop,), kargs = s(popc, iteration=14, max_iteration=100)
         self.assertEqual(newpop.shape, (100,400))
 
+    @unittest.skip('Not implemented yet')
     def test_fraction_offsprings_callback(self):
-        s = crossover.Arithmetic(fraction_offsprings=decay.Linear(0.6,0.4))
+        s = crossover.Arithmetic(decay.Linear(0.6,0.4))
         pop = t.randn(100,400)
         popc = t.clone(pop)
         (newpop,), kargs = s(popc, iteration=14, max_iteration=100)
         self.assertEqual(newpop.shape, (100,400))
 
     def test_parents_callback(self):
-        s = crossover.Arithmetic(num_offsprings=40, num_parents=decay.Linear(6,2,result_type=int))
+        s = crossover.Arithmetic(offsprings=40, num_parents=decay.Linear(6, 2, result_type=int))
         pop = t.randn(100,400)
         popc = t.clone(pop)
         (newpop,), kargs = s(popc, iteration=14, max_iteration=100)
@@ -136,7 +134,7 @@ class ArithmeticTest(unittest.TestCase):
             def __call__(self, *args, iteration: int, max_iteration: int = None, **kwargs):
                 val = super().__call__(*args, iteration=iteration, max_iteration=max_iteration, **kwargs)
                 return t.distributions.Normal(0.5, val)
-        s = crossover.Arithmetic(num_offsprings=40, parent_weight=NormalStdCallback(0.4, 0.2))
+        s = crossover.Arithmetic(offsprings=40, parent_weight=NormalStdCallback(0.4, 0.2))
         pop = t.randn(100,400)
         popc = t.clone(pop)
         (newpop,), kargs = s(popc, iteration=14, max_iteration=100)

@@ -28,7 +28,7 @@ class _Grid(Neighborhood):
 
         orig = np.arange(pop_size)
         if self._type == 'linear':
-            indices = np.zeros((pop_size, 2*self._size*dimensions), dtype=np.int)
+            indices = np.zeros((pop_size, 2*self._size*dimensions), dtype=int)
             for dim_i, dim in enumerate(self._shape):
                 div_back = np.prod(self._shape[:dim_i])
                 div_forw = np.prod(self._shape[:dim_i+1])
@@ -73,7 +73,7 @@ class _Grid2D(_Grid):
             return super().__call__(fitnesses, position, **kwargs)
         elif self._type == 'compact':
             orig = np.arange(pop_size)
-            indices = np.zeros((pop_size, (2*self._size+1)**2-1), dtype=np.int)
+            indices = np.zeros((pop_size, (2*self._size+1)**2-1), dtype=int)
             current_index = 0
             width, height = self._shape
             for hi, h in enumerate(range(-self._size,self._size+1)):
@@ -88,7 +88,7 @@ class _Grid2D(_Grid):
             return t.tensor(indices, dtype=t.long, device=fitnesses.device)
         elif self._type == 'diamond':
             orig = np.arange(pop_size)
-            indices = np.zeros((pop_size, self._size ** 2+(self._size + 1)**2 - 1), dtype=np.int)
+            indices = np.zeros((pop_size, self._size ** 2+(self._size + 1)**2 - 1), dtype=int)
             current_index = 0
             width, height = self._shape
             for hi, h in enumerate(range(-self._size,self._size+1)):

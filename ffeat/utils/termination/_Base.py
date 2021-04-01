@@ -15,7 +15,7 @@ class _Base(ffeat.Pipe):
         self._steps = for_steps
         self._current_index = 0
         self._measured = 0
-        self._values = np.zeros(self._steps, dtype=np.float)
+        self._values = np.zeros(self._steps, dtype=float)
 
     def _log(self, value):
         self._values[self._current_index] = float(value)

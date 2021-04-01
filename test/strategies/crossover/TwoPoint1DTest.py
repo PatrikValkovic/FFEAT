@@ -66,6 +66,13 @@ class TwoPoint1DTest(unittest.TestCase):
         self.assertLess(t.sum(t.any(pop != newpop, dim=-1)), 40)
         self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
 
+    def test_offsprings_discard_parents(self):
+        s = crossover.TwoPoint1D(40, discard_parents=True)
+        pop = t.randn(100,400)
+        (newpop,), kargs = s(pop)
+        self.assertEqual(newpop.shape, (40,400))
+        self.assertIsNot(pop, newpop)
+
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_offsprings_absolute_cuda(self):
         s = crossover.TwoPoint1D(40)

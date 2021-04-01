@@ -7,19 +7,19 @@
 from typing import Tuple, Any, Dict, Union
 import torch as t
 from ffeat import Pipe
+from ._Shared import _Shared
 
 
 # TODO what to do with multiple dimensions
-class TwoPoint1D(Pipe):
+class TwoPoint1D(Pipe, _Shared):
     def __init__(self,
                  offsprings: Union[int, float],
                  replace_parents: bool = True,
-                 in_place: bool = True):
+                 in_place: bool = True,
+                 discard_parents: bool = False):
         if isinstance(offsprings, int) and offsprings % 2 != 0:
             raise ValueError("Number of offsprings must be even")
-        self._offsprings = offsprings
-        self.replace_parents = replace_parents
-        self.in_place = in_place
+        _Shared.__init__(self, offsprings, replace_parents, in_place, discard_parents)
 
     def __call__(self, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         itp = t.long
@@ -64,10 +64,6 @@ class TwoPoint1D(Pipe):
         children[:num_crossovers].add_(population[parents_indices[1]] * mask)
         children[-num_crossovers:].add_(population[parents_indices[0]] * mask)
 
-        population = t.clone(population) if not self.in_place and self.replace_parents else population
-        if self.replace_parents:
-            population[parents_indices.flatten()] = children
-        else:
-            population = t.cat([population, children], dim=0)
+        pop = self._handle_pop(population, children, parents_indices)
 
-        return (population, *args), kwargs
+        return (pop, *args), kwargs

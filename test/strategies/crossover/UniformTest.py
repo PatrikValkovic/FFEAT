@@ -57,6 +57,14 @@ class UniformTest(unittest.TestCase):
         self.assertLess(t.sum(t.any(pop != newpop, dim=-1)), 40)
         self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
 
+    def test_offsprings_discard_parents(self):
+        s = crossover.Uniform(40, discard_parents=True)
+        pop = t.randn(100,400)
+        (newpop,), kargs = s(pop)
+        self.assertEqual(newpop.shape, (40,400))
+        self.assertIsNot(pop, newpop)
+
+
     def test_fraction_absolute_not_inplace(self):
         s = crossover.Uniform(0.4, in_place=False)
         pop = t.randn(100,400)

@@ -7,23 +7,19 @@
 from typing import Tuple, Any, Dict, Union, Callable
 import torch as t
 from ffeat import Pipe
+from ffeat._common.crossover._Shared import _Shared
 
 
-class Arithmetic(Pipe):
+class Arithmetic(Pipe, _Shared):
     def __init__(self,
-                 num_offsprings: Union[int, Callable[..., int]] = None,
-                 fraction_offsprings: Union[float, Callable[..., float]] = None,
+                 offsprings: Union[int, float],
                  num_parents: Union[int, Callable[..., int]] = 2,
                  parent_weight: Union[float, t.distributions.Distribution, Callable[..., float], Callable[..., t.distributions.Distribution]] = None,
                  replace_parents: bool = True,
-                 in_place: bool = True):
-        if num_offsprings is None and fraction_offsprings is None:
-            raise ValueError("Either number of offsprings or a percentage must be provided")
-        self.num_offsprings = self._handle_parameter(num_offsprings)
-        self.fraction_offsprings = self._handle_parameter(fraction_offsprings)
+                 in_place: bool = True,
+                 discard_parents: bool = False):
+        _Shared.__init__(self, offsprings, replace_parents, in_place, discard_parents)
         self.num_parents = self._handle_parameter(num_parents)
-        self.replace_parents = replace_parents
-        self.in_place = in_place
         self.parent_weight = self._handle_parameter(parent_weight)
 
     def __call__(self, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
@@ -32,9 +28,8 @@ class Arithmetic(Pipe):
         dev = population.device
         pop_len = len(population)
         dim = population.shape[1:]
-        fract_children = self.fraction_offsprings(population, *args, **kwargs)
-        num_children = self.num_offsprings(population, *args, **kwargs)
-        num_children = num_children if num_children is not None else int(pop_len * fract_children)
+        num_children = self._offsprings
+        num_children = num_children if isinstance(num_children, int) else int(pop_len * num_children)
         assert isinstance(num_children, int), f"Number of offsprings should be int, {type(num_children)} received"
         num_parents = self.num_parents(population, *args, **kwargs)
         assert isinstance(num_parents, int), f"Number of parents should be int, {type(num_parents)} received"
