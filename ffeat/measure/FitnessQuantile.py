@@ -22,7 +22,7 @@ class FitnessQuantile(Pipe, Base):
         yield f"fitness_q{self.quenatile}"
 
     def __call__(self, fitnesses, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
-        q = float(t.quantile(fitnesses, 1.0 - self.quenatile))
+        q = float(t.quantile(fitnesses, self.quenatile))
         self._report(q)
         for k in self._dict_key():
             kwargs.update({k: q})
@@ -52,3 +52,17 @@ class Fitness99Quantile(FitnessQuantile):
 
     def __init__(self, reporter = None):
         super().__init__(0.99, reporter)
+
+
+class Fitness05Quantile(FitnessQuantile):
+    ARG_NAME = "fitness_q05"
+
+    def __init__(self, reporter = None):
+        super().__init__(0.05, reporter)
+
+
+class Fitness01Quantile(FitnessQuantile):
+    ARG_NAME = "fitness_q01"
+
+    def __init__(self, reporter = None):
+        super().__init__(0.01, reporter)

@@ -47,6 +47,30 @@ class TournamentTest(unittest.TestCase):
         new_fitness = t.sum(t.pow(new_pop, 2.0), dim=-1)
         self.assertLess(t.mean(new_fitness), t.mean(old_fitness))
 
+    def test_is_better_maximization(self):
+        s = selection.Tournament(1.0, maximization=True)
+        old_pop = t.randn((1000,40))
+        old_fitness = t.sum(t.pow(old_pop, 2.0), dim=-1)
+        (new_pop,), kargs = s(old_fitness, old_pop)
+        new_fitness = t.sum(t.pow(new_pop, 2.0), dim=-1)
+        self.assertGreater(t.mean(new_fitness), t.mean(old_fitness))
+
+    def test_is_better_more_parents(self):
+        s = selection.Tournament(1.0, parents=4)
+        old_pop = t.randn((1000,40))
+        old_fitness = t.sum(t.pow(old_pop, 2.0), dim=-1)
+        (new_pop,), kargs = s(old_fitness, old_pop)
+        new_fitness = t.sum(t.pow(new_pop, 2.0), dim=-1)
+        self.assertLess(t.mean(new_fitness), t.mean(old_fitness))
+
+    def test_is_better_maximization_more_parents(self):
+        s = selection.Tournament(1.0, maximization=True, parents=4)
+        old_pop = t.randn((1000,40))
+        old_fitness = t.sum(t.pow(old_pop, 2.0), dim=-1)
+        (new_pop,), kargs = s(old_fitness, old_pop)
+        new_fitness = t.sum(t.pow(new_pop, 2.0), dim=-1)
+        self.assertGreater(t.mean(new_fitness), t.mean(old_fitness))
+
     def test_absolute_callback(self):
         s = selection.Tournament(ffeat.utils.decay.Linear(80,40, result_type=int))
         pop, fitness = t.rand((100,60)), t.randn((100,))

@@ -17,6 +17,7 @@ from .clip.Velocity import _Velocity
 from .clip.Position import Position
 
 
+# Minimize
 class PSO(Pipe):
     def __init__(self,
                  position_initialization: Pipe,

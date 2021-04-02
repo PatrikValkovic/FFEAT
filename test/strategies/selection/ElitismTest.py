@@ -47,6 +47,27 @@ class ElitismTest(unittest.TestCase):
         self.assertEqual(newpop.shape, (100,60))
         self.assertEqual(t.count_nonzero(t.all(newpop == pop, dim=-1)), 16)
 
+    def test_should_keep_1_maximization(self):
+        s = selection.Elitism(1, lambda *_, **__: ((t.rand((100,60)) + 10,), __), maximization=True)
+        pop, fitness = t.rand((100,60)), t.randn((100,))
+        best_index = t.argmax(fitness)
+        (newpop,), kargs = s(fitness, pop)
+        self.assertEqual(newpop.shape, (100,60))
+        self.assertEqual(t.count_nonzero(t.all(newpop == pop, dim=-1)), 1)
+        self.assertTrue(t.all(t.abs(newpop[best_index] - pop[best_index]) < 1e-9))
+
+    def test_should_keep_10_maximization(self):
+        s = selection.Elitism(10, lambda *_, **__: ((t.rand((100,60)) + 10,), __), maximization=True)
+        pop, fitness = t.rand((100,60)), t.randn((100,))
+        q = t.quantile(fitness, 0.9)
+        best_indices = t.where(fitness >= q)[0]
+        self.assertEqual(len(best_indices), 10)
+        (newpop,), kargs = s(fitness, pop)
+        self.assertEqual(newpop.shape, (100,60))
+        self.assertEqual(t.count_nonzero(t.all(newpop == pop, dim=-1)), 10)
+        for bi in best_indices:
+            self.assertTrue(t.all(t.abs(newpop[bi] - pop[bi]) < 1e-9))
+
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_should_keep_16_percentage_cuda(self):
         s = selection.Elitism(0.16, lambda *_, **__: ((t.rand((100,60)) + 10,), __))

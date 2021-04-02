@@ -7,23 +7,23 @@
 from .FitnessQuantile import FitnessQuantile
 
 
-class FitnessBest(FitnessQuantile):
-    ARG_NAME = "fitness_best"
-
-    def __init__(self, reporter=None):
-        super().__init__(1.0, reporter)
-
-    def _dict_key(self):
-        yield from super()._dict_key()
-        yield FitnessBest.ARG_NAME
-
-
-class FitnessWorse(FitnessQuantile):
-    ARG_NAME = "fitness_worse"
+class FitnessLowest(FitnessQuantile):
+    ARG_NAME = "fitness_lowest"
 
     def __init__(self, reporter=None):
         super().__init__(0.0, reporter)
 
     def _dict_key(self):
         yield from super()._dict_key()
-        yield FitnessWorse.ARG_NAME
+        yield FitnessLowest.ARG_NAME
+
+
+class FitnessHighest(FitnessQuantile):
+    ARG_NAME = "fitness_highest"
+
+    def __init__(self, reporter=None):
+        super().__init__(1.0, reporter)
+
+    def _dict_key(self):
+        yield from super()._dict_key()
+        yield FitnessHighest.ARG_NAME

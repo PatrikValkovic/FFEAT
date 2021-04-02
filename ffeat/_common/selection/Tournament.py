@@ -12,8 +12,13 @@ _IFU = Union[int, float]
 
 
 class Tournament(Pipe):
-    def __init__(self, num_select: Union[_IFU, Callable[..., _IFU]] = None):
+    def __init__(self,
+                 num_select: Union[_IFU, Callable[..., _IFU]] = None,
+                 maximization=False,
+                 parents: int = 2):
         self.num_select = self._handle_parameter(num_select)
+        self.maximization=maximization
+        self.parents = parents
 
     def __call__(self, fitnesses, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         originally = len(population)
@@ -25,11 +30,9 @@ class Tournament(Pipe):
         if not isinstance(to_select, int):
             raise ValueError(f"Number of members to select needs to be int, {type(to_select)} instead")
 
-        indices = t.randint(originally, (2, to_select), dtype=t.long, device=fitnesses.device)
-        comparison = fitnesses[indices[0]] < fitnesses[indices[1]]
-        better = t.cat([
-            indices[0, comparison],
-            indices[1, t.logical_not(comparison)]
-        ])
-        new_population = population[better.to(population.device)]
-        return (new_population, *args), kwargs
+        indices = t.randint(originally, (to_select, self.parents), dtype=t.long, device=fitnesses.device)
+        operation = t.argmax if self.maximization else t.argmin
+        best_indices = operation(fitnesses[indices], dim=1)
+        selected = population[indices[range(to_select),best_indices]]
+
+        return (selected, *args), kwargs
