@@ -83,15 +83,51 @@ class ArithmeticTest(unittest.TestCase):
 
     def test_custom_weight_float(self):
         s = crossover.Arithmetic(num_parents=5, offsprings=40, parent_weight=1 / 5)
-        pop = t.randn(100,400)
+        pop = t.randn(100,13,19)
         (newpop,), kargs = s(pop)
-        self.assertEqual(newpop.shape, (100,400))
+        self.assertEqual(newpop.shape, (100,13,19))
 
-    def test_custom_weight_dist(self):
-        s = crossover.Arithmetic(num_parents=3, offsprings=40, parent_weight=t.distributions.Normal(1 / 3, 1))
-        pop = t.randn(100,400)
+    def test_custom_weight_per_dimension(self):
+        s = crossover.Arithmetic(num_parents=5, offsprings=40, parent_weight=t.full((13,19), 0.2))
+        pop = t.randn(100,13,19)
         (newpop,), kargs = s(pop)
-        self.assertEqual(newpop.shape, (100,400))
+        self.assertEqual(newpop.shape, (100,13,19))
+
+    def test_custom_weight_per_parent(self):
+        s = crossover.Arithmetic(num_parents=5, offsprings=40, parent_weight=t.full((5,), 0.2))
+        pop = t.randn(100,13,19)
+        (newpop,), kargs = s(pop)
+        self.assertEqual(newpop.shape, (100,13,19))
+
+    def test_custom_weight_per_offspring(self):
+        s = crossover.Arithmetic(num_parents=5, offsprings=40, parent_weight=t.full((40,), 0.2))
+        pop = t.randn(100,13,19)
+        (newpop,), kargs = s(pop)
+        self.assertEqual(newpop.shape, (100,13,19))
+
+    def test_custom_weight_per_offspringparent(self):
+        s = crossover.Arithmetic(num_parents=5, offsprings=40, parent_weight=t.full((40,5), 0.2))
+        pop = t.randn(100,13,19)
+        (newpop,), kargs = s(pop)
+        self.assertEqual(newpop.shape, (100,13,19))
+
+    def test_custom_weight_per_offspringdimension(self):
+        s = crossover.Arithmetic(num_parents=5, offsprings=40, parent_weight=t.full((40,13,19), 0.2))
+        pop = t.randn(100,13,19)
+        (newpop,), kargs = s(pop)
+        self.assertEqual(newpop.shape, (100,13,19))
+
+    def test_custom_weight_per_parentdimension(self):
+        s = crossover.Arithmetic(num_parents=5, offsprings=40, parent_weight=t.full((5,13,19), 0.2))
+        pop = t.randn(100,13,19)
+        (newpop,), kargs = s(pop)
+        self.assertEqual(newpop.shape, (100,13,19))
+
+    def test_custom_weight_per_all(self):
+        s = crossover.Arithmetic(num_parents=5, offsprings=40, parent_weight=t.full((40,5,13,19), 0.2))
+        pop = t.randn(100,13,19)
+        (newpop,), kargs = s(pop)
+        self.assertEqual(newpop.shape, (100,13,19))
 
     def test_multiple_parents_noreplace(self):
         s = crossover.Arithmetic(num_parents=7, offsprings=40, replace_parents=False)
@@ -129,31 +165,16 @@ class ArithmeticTest(unittest.TestCase):
         (newpop,), kargs = s(popc, iteration=14, max_iteration=100)
         self.assertEqual(newpop.shape, (100,400))
 
-    def test_parents_weights_callback(self):
-        class NormalStdCallback(decay.Linear):
-            def __call__(self, *args, iteration: int, max_iteration: int = None, **kwargs):
-                val = super().__call__(*args, iteration=iteration, max_iteration=max_iteration, **kwargs)
-                return t.distributions.Normal(0.5, val)
-        s = crossover.Arithmetic(offsprings=40, parent_weight=NormalStdCallback(0.4, 0.2))
-        pop = t.randn(100,400)
-        popc = t.clone(pop)
-        (newpop,), kargs = s(popc, iteration=14, max_iteration=100)
-        self.assertEqual(newpop.shape, (100,400))
-
     @repeat(5)
     def test_in_alg(self):
-        class NormalStdCallback(decay.Linear):
-            def __call__(self, *args, iteration: int, max_iteration: int = None, **kwargs):
-                val = super().__call__(*args, iteration=iteration, max_iteration=max_iteration, **kwargs)
-                return t.distributions.Normal(0.5, val)
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
         alg = ffeat.strategies.EvolutionStrategy(
             ffeat.strategies.initialization.Uniform(100, -5.0, 5.0, 40),
             ffeat.strategies.evaluation.Evaluation(_f),
-            ffeat.strategies.selection.Tournament(1.0),
-            ffeat.strategies.mutation.AddFromNormal(0.01, 0.1),
-            ffeat.strategies.crossover.Arithmetic(60, num_parents=3, parent_weight=NormalStdCallback(0.5, 0.3)),
-            iterations=500
+            ffeat.strategies.selection.Tournament(100),
+            ffeat.strategies.mutation.AddFromNormal(0.01),
+            ffeat.strategies.crossover.Arithmetic(80, replace_parents=False),
+            iterations=1000
         )
         (pop,), kargs = alg()
         self.assertTrue(t.all(_f(pop) < 1))
