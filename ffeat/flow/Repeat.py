@@ -26,8 +26,8 @@ class Repeat(Pipe):
             yield from range(self._max_iterations)
 
         break_identifier = object()
-        def _break():
-            raise StopIteration(break_identifier)
+        def _break(*args, **kwargs):
+            raise StopIteration(break_identifier, args, kwargs)
         key_name = "break" if self._identifier is None else f"{self._identifier}_break"
         previous_break = kwargs.get('break', None)
         previous_iter = kwargs.get('iteration', None)
@@ -49,6 +49,9 @@ class Repeat(Pipe):
         except StopIteration as e:
             if e.args[0] != break_identifier:
                 raise e
+            if len(e.args[1]) > 0:
+                cargs = e.args[1]
+            ckargs.update(e.args[2])
 
         if 'break' in ckargs:
             del ckargs['break']
@@ -56,7 +59,6 @@ class Repeat(Pipe):
             del ckargs[key_name]
         if previous_break is not None:
             ckargs['break'] = previous_break
-        if previous_iter is not None:
-            ckargs['iteration'] = previous_iter
+        ckargs['iteration'] = previous_iter
         ckargs['max_iteration'] = previous_max_iters
         return cargs, ckargs

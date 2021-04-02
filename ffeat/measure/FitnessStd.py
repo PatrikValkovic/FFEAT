@@ -16,8 +16,8 @@ class FitnessStd(Pipe, Base):
     def __init__(self, reporter=None):
         Base.__init__(self, reporter)
 
-    def __call__(self, fitness, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
-        m = float(t.std(fitness))
+    def __call__(self, fitnesses, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+        m = float(t.std(fitnesses))
         self._report(m)
         kwargs[FitnessStd.ARG_NAME] = m
-        return (fitness, *args), kwargs
+        return (fitnesses, *args), kwargs

@@ -4,7 +4,7 @@
 # 3/17/2021
 #
 ###############################
-from typing import Tuple, Any, Dict
+from typing import Tuple, Any, Dict, Optional
 from ffeat import Pipe, flow
 
 
@@ -12,7 +12,7 @@ class AlgorithmSkeleton(Pipe):
     def __init__(self,
                  initialization: Pipe,
                  *steps: Pipe,
-                 iterations: int = 100):
+                 iterations: Optional[int] = 100):
         self.__flow = flow.Sequence(
             initialization,
             flow.Repeat(

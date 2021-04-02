@@ -108,6 +108,22 @@ class RepeatTest(unittest.TestCase):
         self.assertSequenceEqual(result, [8+1])
         self.assertEqual(count, 241)
 
+    def test_breakable_with_return(self):
+        count = 0
+        def _f(*args, **kwargs):
+            nonlocal count
+            count += 1
+            if count == 241:
+                return kwargs['break'](1,2,something1=True)
+            return args, kwargs
+
+        r = ffeat.flow.Repeat(_f)
+        (one,two), kargs = r(8, 7, 6, 5)
+        self.assertEqual(count, 241)
+        self.assertEqual(one, 1)
+        self.assertEqual(two, 2)
+        self.assertDictContainsSubset({'something1': True}, kargs)
+
 
 if __name__ == '__main__':
     unittest.main()
