@@ -32,6 +32,32 @@ class DifferentialTest(unittest.TestCase):
         (newpop,), kargs = d(p)
         self.assertEqual(newpop.shape, (1600,400))
 
+    @repeat(5)
+    def test_absolute_discard(self):
+        d = crossover.Differential(60, discard_parents=True)
+        p = t.randn((100, 400))
+        (newpop,), kargs = d(p)
+        self.assertEqual(newpop.shape, (60,400))
+        self.assertIsNot(newpop, p)
+        for i in range(100):
+            for j in range(60):
+                self.assertTrue(t.norm(p[i] - newpop[j]) > 1e-3)
+
+    @repeat(5)
+    def test_absolute_discard_with_fitness(self):
+        _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
+        d = crossover.DifferentialWithFitness(60, evaluation=evaluation.Evaluation(_f), discard_parents=True)
+        p = t.randn((100, 400))
+        f = _f(p)
+        (nf, np), kargs = d(f, p)
+        self.assertEqual(np.shape, (60,400))
+        self.assertEqual(nf.shape, (60,))
+        for i in range(100):
+            for j in range(60):
+                self.assertTrue(t.norm(p[i] - np[j]) > 1e-3)
+        real_fitness = _f(np)
+        self.assertTrue(t.all(t.abs(nf - real_fitness) < 1e-6))
+
     def test_fraction_no_replace(self):
         d = crossover.Differential(fraction_offsprings=0.6, replace_parents=False)
         p = t.randn((1000, 400))

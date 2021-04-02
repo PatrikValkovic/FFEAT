@@ -21,7 +21,8 @@ class _Differential(Pipe):
                  differential_weight: Union[_FDU, Callable[..., _FDU]] = 0.8,
                  evaluation=None,
                  replace_parents: bool = True,
-                 replace_only_better: bool = False,):
+                 replace_only_better: bool = False,
+                 discard_parents: bool = False):
         if num_offsprings is None and fraction_offsprings is None:
             raise ValueError("Either number of offsprings or a percentage must be provided")
         if replace_only_better and evaluation is None:
@@ -32,6 +33,7 @@ class _Differential(Pipe):
         self._F = self._handle_parameter(differential_weight)
         self._replace_parents = replace_parents
         self._replace_only_better = replace_only_better
+        self._discard_parents = discard_parents
         self._evaluate = evaluation
         self.__parent_fitnesses = parent_fitnesses
         self.__report_offspring_fitness = report_offspring_fitness
@@ -61,7 +63,9 @@ class _Differential(Pipe):
         mut = t.rand((num_children, *dim), device=dev) > CR_sample.reshape(-1, *[1] * len(dim))
         children[mut] = population[parent_indices[0]][mut]
 
-        if self._replace_only_better:
+        if self._discard_parents:
+            population = children
+        elif self._replace_only_better:
             (parent_f, *_), _ = self.__parent_fitnesses(population, parent_indices[0], *args, **kwargs)
             (children_f, *_), _ = self._evaluate(children)
             children_better = children_f < parent_f
@@ -88,11 +92,13 @@ class Differential(_Differential):
                  differential_weight: Union[_FDU, Callable[..., _FDU]] = 0.8,
                  evaluation=None,
                  replace_parents: bool = True,
-                 replace_only_better: bool = False):
+                 replace_only_better: bool = False,
+                 discard_parents: bool = False):
         super().__init__(lambda parents, indices, *args, **kwargs: evaluation(parents[indices], *args, **kwargs),
                          lambda *args, **kwargs: None,
                          num_offsprings, fraction_offsprings, crossover_probability,
-                         differential_weight, evaluation, replace_parents, replace_only_better)
+                         differential_weight, evaluation,
+                         replace_parents, replace_only_better, discard_parents)
 
 
 class DifferentialWithFitness(_Differential):
@@ -103,11 +109,13 @@ class DifferentialWithFitness(_Differential):
                  differential_weight: Union[_FDU, Callable[..., _FDU]] = 0.8,
                  evaluation=None,
                  replace_parents: bool = True,
-                 replace_only_better: bool = False):
+                 replace_only_better: bool = False,
+                 discard_parents: bool = False):
         super().__init__(self.__handle_parent_fitnesses,
                          self.__report_offspring_fitness,
                          num_offsprings, fraction_offsprings, crossover_probability,
-                         differential_weight, evaluation, replace_parents, replace_only_better)
+                         differential_weight, evaluation,
+                         replace_parents, replace_only_better, discard_parents)
         self.__fitnesses = None
         self.__parent_indices = None
         self.__children_fitness = None
@@ -126,7 +134,10 @@ class DifferentialWithFitness(_Differential):
 
         (newpopulation, *arg), kargs = super().__call__(population, *args, **kwargs)
 
-        if self._replace_only_better:
+        if self._discard_parents:
+            (children_f, *_), _ = self._evaluate(newpopulation)
+            return (children_f, newpopulation, *args), kwargs
+        elif self._replace_only_better:
             fitnesses[self.__parent_indices] = self.__children_fitness[self.__picked_children]
         elif not self._replace_parents:
             (children_f, *_), _ = self._evaluate(newpopulation[len(population):])
