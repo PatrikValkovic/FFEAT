@@ -11,6 +11,7 @@ from ffeat._common.crossover._Shared import _Shared
 
 _FTU = Union[float, t.Tensor]
 
+
 class Arithmetic(Pipe, _Shared):
     def __init__(self,
                  offsprings: Union[int, float],
