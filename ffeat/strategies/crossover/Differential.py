@@ -50,8 +50,7 @@ class _Differential(Pipe):
         if not isinstance(F, t.distributions.Distribution):
             F = t.distributions.Uniform(F-1e-6, F+1e-6)
 
-        parents_probs = t.ones((num_children, pop_len), dtype=t.float32, device=dev)
-        parents_probs = t.divide(parents_probs, t.tensor(pop_len), out=parents_probs)
+        parents_probs = t.tensor(1 / pop_len, dtype=t.float32, device=dev).as_strided_((num_children, pop_len), (0,0))
         parent_indices = t.multinomial(parents_probs, 4, replacement=False).T  # Unif[P0,P1 + F(P2 - P3); CR]
         CR_sample = CR.sample((num_children,)).to(dev).type(t.float32)
         F_sample = F.sample((num_children,)).to(dev).type(t.float32)
