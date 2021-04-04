@@ -122,7 +122,8 @@ class RepeatTest(unittest.TestCase):
         self.assertEqual(count, 241)
         self.assertEqual(one, 1)
         self.assertEqual(two, 2)
-        self.assertDictContainsSubset({'something1': True}, kargs)
+        self.assertIn("something1", kargs)
+        self.assertTrue(kargs['something1'])
 
 
 if __name__ == '__main__':

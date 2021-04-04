@@ -35,8 +35,8 @@ class EvaluationTest(unittest.TestCase):
             return t.sum(population ** 2, dim=-1)
         e = evaluation.Evaluation(_fn)
         (fitness, population), kargs = e(t.randn((100,40)))
-        self.assertTrue('fitness' in kargs)
-        self.assertIs(fitness, kargs['fitness'])
+        self.assertIn('orig_fitness', kargs)
+        self.assertIs(fitness, kargs['orig_fitness'])
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_evaluate_cuda(self):
