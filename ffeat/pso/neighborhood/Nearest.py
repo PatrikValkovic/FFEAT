@@ -8,16 +8,24 @@ from typing import Union, Callable
 import torch as t
 from .Neighborhood import Neighborhood
 
+_IFU = Union[float, int]
 
 class Nearest(Neighborhood):
     def __init__(self,
-                 size: Union[int, Callable[..., int]],
+                 size: Union[_IFU, Callable[..., _IFU]],
                  norm: int = 2):
         self._size = self._handle_parameter(size)
         self._norm = norm
 
     def __call__(self, fitnesses, position, **kwargs) -> t.Tensor:
+        pop_size = len(fitnesses)
         size = self._size(fitnesses, position, **kwargs)
+        if int(size) != size:
+            if size <= 1.0:
+                size = int(pop_size * size)
+            else:
+                size = int(size)
+
         distances = t.subtract(position[:,None,:], position[None,:,:])
         distances = t.abs(distances, out=distances)
         distances = t.pow(distances, self._norm, out=distances)

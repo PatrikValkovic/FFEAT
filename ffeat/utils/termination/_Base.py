@@ -22,12 +22,6 @@ class _Base(ffeat.Pipe):
         self._measured = min(self._measured + 1, self._steps)
         self._current_index = (self._current_index + 1) % self._steps
 
-    @property
-    def _vals(self):
-        m = self._values[:self._measured]
-        return self._values[:self._measured]
-
-
 class _BaseMetric(_Base):
     def __init__(self, metric: str, for_steps: int):
         super().__init__(for_steps)
@@ -43,6 +37,7 @@ class _BaseMetric(_Base):
 
         if 'ffeat_break' not in kwargs:
             raise ValueError("Key ffeat_break not in dictionary, you need to use it within algorithm class")
-        self._logic(kwargs['ffeat_break'])
+        if self._measured >= self._steps:
+            self._logic(kwargs['ffeat_break'])
 
         return super().__call__(*args, **kwargs)
