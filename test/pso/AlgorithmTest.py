@@ -116,7 +116,7 @@ class AlgorithmTest(unittest.TestCase):
             pso.initialization.Uniform(100,-5,5,40, dtype=t.float16),
             pso.initialization.Uniform(100,-1,1,40, dtype=t.float16),
             pso.evaluation.Evaluation(fn),
-            pso.neighborhood.Random(5),
+            pso.neighborhood.Random(0.03),
             pso.update.PSO2006(local_c=0.2, global_c=0.3, inertia=0.95),
             iterations=500,
         )

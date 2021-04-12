@@ -25,6 +25,10 @@ class GridTest(unittest.TestCase):
         c = pso.neighborhood.Grid('linear', 7, (17,19,23,29))
         n = c(t.rand((17*19*23*29,7)), t.rand((17*19*23*29,7)))
 
+    def test_seven_linear_4D_fraction_size(self):
+        c = pso.neighborhood.Grid('linear', 0.0001, (17,19,23,29))
+        n = c(t.rand((17*19*23*29,7)), t.rand((17*19*23*29,7)))
+
 
 if __name__ == '__main__':
     unittest.main()

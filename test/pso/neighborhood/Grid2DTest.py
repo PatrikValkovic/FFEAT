@@ -63,6 +63,10 @@ class Grid2DTest(unittest.TestCase):
         c = pso.neighborhood.Grid2D('compact', 5, (31, 33))
         c(t.rand((31*33, 2)), t.rand((31*33, 2)))
 
+    def test_five_compact_fraction_size(self):
+        c = pso.neighborhood.Grid2D('compact', 0.01, (31, 33))
+        c(t.rand((31*33, 2)), t.rand((31*33, 2)))
+
 
 if __name__ == '__main__':
     unittest.main()

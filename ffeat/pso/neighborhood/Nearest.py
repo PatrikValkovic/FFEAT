@@ -19,12 +19,7 @@ class Nearest(Neighborhood):
 
     def __call__(self, fitnesses, position, **kwargs) -> t.Tensor:
         pop_size = len(fitnesses)
-        size = self._size(fitnesses, position, **kwargs)
-        if int(size) != size:
-            if size <= 1.0:
-                size = int(pop_size * size)
-            else:
-                size = int(size)
+        size = self._handle_size(self._size(fitnesses, position, **kwargs), pop_size)
 
         distances = t.subtract(position[:,None,:], position[None,:,:])
         distances = t.abs(distances, out=distances)

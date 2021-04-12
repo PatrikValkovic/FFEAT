@@ -20,7 +20,7 @@ class StdBellow(_BaseMetric):
         self._threshold = threshold_value
 
     def _logic(self, break_cb):
-        if self._measured == self._steps and np.std(self._vals) < self._threshold:
+        if self._measured == self._steps and np.std(self._values) < self._threshold:
             break_cb()
 
 
@@ -29,13 +29,11 @@ class MetricReached(_BaseMetric):
         super().__init__(metric, for_steps)
         self._target = target_value
         self._minimization = minimizations
-        self._satisfied_times = 0
 
     def _logic(self, break_cb):
-        val = self._values[(self._current_index + self._steps - 1) % self._steps]
-        if val < self._target and self._minimization or val > self._target and not self._minimization:
-            self._satisfied_times += 1
-            if self._satisfied_times > self._steps:
-                break_cb()
+        if self._minimization:
+            satisfied = self._values < self._target
         else:
-            self._satisfied_times = 0
+            satisfied = self._values > self._target
+        if np.all(satisfied):
+                break_cb()

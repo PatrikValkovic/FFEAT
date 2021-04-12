@@ -11,3 +11,9 @@ from ffeat import Pipe
 class Neighborhood(Pipe):
     def __call__(self, fitnesses, position, **kwargs) -> t.Tensor:
         raise NotImplementedError()
+
+    def _handle_size(self, size, pop_size):
+        if int(size) != size:
+            if size <= 1.0:
+                return int(pop_size * size)
+        return int(size)

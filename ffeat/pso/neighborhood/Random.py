@@ -14,14 +14,9 @@ class Random(Neighborhood):
                  size: Union[float, int, Callable[..., Union[int, float]]]):
         self._size = self._handle_parameter(size)
 
-    def __call__(self, fitnesses, positions, iteration, **kwargs) -> t.Tensor:
+    def __call__(self, fitnesses, positions, **kwargs) -> t.Tensor:
         pop_size = len(fitnesses)
-        neighbors = self._size(fitnesses, positions, **kwargs)
-        if int(neighbors) != neighbors:
-            if neighbors <= 1.0:
-                neighbors = int(pop_size * neighbors)
-            else:
-                neighbors = int(neighbors)
+        neighbors = self._handle_size(self._size(fitnesses, positions, **kwargs), pop_size)
 
         neigborhood = t.randint(pop_size, (pop_size, neighbors), dtype=t.long, device=fitnesses.device)
         return neigborhood

@@ -29,7 +29,7 @@ class StdBelowTest(unittest.TestCase):
         )()
         self.assertEqual(executed, 69)
 
-    def test_metric_reached(self):
+    def test_metric_reached_minimization(self):
         executed = 0
         def _fn(_):
             nonlocal executed
@@ -41,11 +41,29 @@ class StdBelowTest(unittest.TestCase):
             ffeat.measure.FitnessMean(),
             ffeat.utils.termination.MetricReached(
                 ffeat.measure.FitnessMean.ARG_NAME,
-                20, 4
+                5, 4
             ),
             iterations=100
         )()
-        self.assertEqual(executed, 46)
+        self.assertEqual(executed, 50-4+5)
+
+    def test_metric_reached_maximization(self):
+        executed = 0
+        def _fn(_):
+            nonlocal executed
+            executed += 1
+            return t.full((100,), -((50-executed)**2), dtype=t.float32)
+        ffeat.strategies.EvolutionStrategy(
+            ffeat.strategies.initialization.Uniform(100, -5, 5, 40),
+            ffeat.strategies.evaluation.Evaluation(_fn),
+            ffeat.measure.FitnessMean(),
+            ffeat.utils.termination.MetricReached(
+                ffeat.measure.FitnessMean.ARG_NAME,
+                5, -10, minimizations=False
+            ),
+            iterations=100
+        )()
+        self.assertEqual(executed, 50-4+5)
 
     def test_std_bellow(self):
         executed = 0
