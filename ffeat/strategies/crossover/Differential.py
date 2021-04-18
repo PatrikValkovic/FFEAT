@@ -85,7 +85,8 @@ class _Differential(Pipe):
 
 
 class Differential(_Differential):
-    def __init__(self, num_offsprings: int = None,
+    def __init__(self,
+                 num_offsprings: int = None,
                  fraction_offsprings: float = None,
                  crossover_probability: Union[_FDU, Callable[..., _FDU]] = 0.9,
                  differential_weight: Union[_FDU, Callable[..., _FDU]] = 0.8,

@@ -73,6 +73,16 @@ class OnePoint1DTest(unittest.TestCase):
         self.assertLess(t.sum(t.any(pop != newpop, dim=-1)), 40)
         self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
 
+    def test_parental_selection_multinomial(self):
+        s = crossover.OnePoint1D(40, parental_sampling=ffeat.utils.parental_sampling.multinomial)
+        pop = t.randn(100,400)
+        popc = t.clone(pop)
+        (newpop,), kargs = s(popc)
+        self.assertEqual(newpop.shape, (100,400))
+        self.assertIs(popc, newpop)
+        self.assertLess(t.sum(t.any(pop != newpop, dim=-1)), 40)
+        self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
+
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_offsprings_absolute_cuda(self):
         s = crossover.OnePoint1D(offsprings=40)
@@ -80,6 +90,17 @@ class OnePoint1DTest(unittest.TestCase):
         popc = t.clone(pop)
         (newpop,), kargs = s(popc)
         self.assertEqual(newpop.device, t.device('cuda:0'))
+
+    @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
+    def test_parental_selection_multinomial_cuda(self):
+        s = crossover.OnePoint1D(40, parental_sampling=ffeat.utils.parental_sampling.multinomial)
+        pop = t.randn(100,400, device='cuda')
+        popc = t.clone(pop)
+        (newpop,), kargs = s(popc)
+        self.assertEqual(newpop.shape, (100,400))
+        self.assertIs(popc, newpop)
+        self.assertLess(t.sum(t.any(pop != newpop, dim=-1)), 40)
+        self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     def test_offsprings_fraction_cuda(self):

@@ -34,6 +34,7 @@ class Arithmetic(Pipe, _Shared):
         num_children = num_children if isinstance(num_children, int) else int(pop_len * num_children)
         assert isinstance(num_children, int), f"Number of offsprings should be int, {type(num_children)} received"
         num_parents = self._num_parents(population, *args, **kwargs)
+        num_parents = int(num_parents) if int(num_parents) == num_parents else num_parents
         assert isinstance(num_parents, int), f"Number of parents should be int, {type(num_parents)} received"
 
         parent_weights = self._parent_weight(population, *args, **kwargs)

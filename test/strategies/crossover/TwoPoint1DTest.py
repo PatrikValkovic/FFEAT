@@ -117,5 +117,27 @@ class TwoPoint1DTest(unittest.TestCase):
         (pop,), kargs = alg()
         self.assertTrue(t.all(_f(pop) < 1))
 
+    def test_parental_sampling(self):
+        s = crossover.TwoPoint1D(40, parental_sampling=ffeat.utils.parental_sampling.multinomial)
+        pop = t.randn(100,400)
+        popc = t.clone(pop)
+        (newpop,), kargs = s(popc)
+        self.assertEqual(newpop.shape, (100,400))
+        self.assertIs(popc, newpop)
+        self.assertLess(t.sum(t.any(pop != newpop, dim=-1)), 40)
+        self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
+
+
+    @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
+    def test_parental_sampling_cuda(self):
+        s = crossover.TwoPoint1D(40, parental_sampling=ffeat.utils.parental_sampling.multinomial)
+        pop = t.randn(100,400, device='cuda')
+        popc = t.clone(pop)
+        (newpop,), kargs = s(popc)
+        self.assertEqual(newpop.shape, (100,400))
+        self.assertIs(popc, newpop)
+        self.assertLess(t.sum(t.any(pop != newpop, dim=-1)), 40)
+        self.assertGreaterEqual(t.sum(t.any(pop == newpop, dim=-1)), 60)
+
 if __name__ == '__main__':
     unittest.main()

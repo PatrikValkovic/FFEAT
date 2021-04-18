@@ -5,6 +5,6 @@
 #
 ###############################
 
-from .DistAdd import AddFromDistribution, AddFromNormal
+from .DistAdd import AddFromDistribution, AddFromNormal, AddFromCauchy
 from .AdaptiveStep import AdaptiveStep
 from .Replace import Replace, ReplaceUniform

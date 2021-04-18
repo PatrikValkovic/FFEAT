@@ -47,3 +47,18 @@ class AddFromNormal(AddFromDistribution):
         if isinstance(self._std, Callable):
             self._distribution = self._handle_parameter(t.distributions.Normal(0.0, self._std(*args, **kwargs)))
         return super().__call__(*args, **kwargs)
+
+
+class AddFromCauchy(AddFromDistribution):
+    def __init__(self,
+                 scale: Union[float, Callable[..., float]],
+                 mutation_rate: Union[float, Callable[..., float]] = 1.0,
+                 in_place: bool = True):
+        self._scale = scale
+        dist = None if isinstance(scale, Callable) else t.distributions.Cauchy(0.0, scale)
+        super().__init__(dist, mutation_rate, in_place)
+
+    def __call__(self, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+        if isinstance(self._scale, Callable):
+            self._distribution = self._handle_parameter(t.distributions.Normal(0.0, self._scale(*args, **kwargs)))
+        return super().__call__(*args, **kwargs)

@@ -8,6 +8,7 @@ from typing import Tuple, Any, Dict, Union
 import torch as t
 from ffeat import Pipe
 from ._Shared import _Shared
+from ffeat.utils._parental_sampling import randint
 
 
 # TODO what to do with multiple dimensions
@@ -16,10 +17,12 @@ class TwoPoint1D(Pipe, _Shared):
                  offsprings: Union[int, float],
                  replace_parents: bool = True,
                  in_place: bool = True,
-                 discard_parents: bool = False):
+                 discard_parents: bool = False,
+                 parental_sampling = randint):
         if isinstance(offsprings, int) and offsprings % 2 != 0:
             raise ValueError("Number of offsprings must be even")
         _Shared.__init__(self, offsprings, replace_parents, in_place, discard_parents)
+        self._parental_sampling = parental_sampling
 
     def __call__(self, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         itp = t.long
@@ -51,7 +54,7 @@ class TwoPoint1D(Pipe, _Shared):
         second_crossover = t.rand(num_crossovers, device=dev)
         second_crossover = t.multiply(second_crossover, dim - first_crossover - 1, out=second_crossover)
         second_crossover = second_crossover.add_(1).add_(first_crossover).type(itp)
-        parents_indices = t.randint(num_parents, (2, num_crossovers), dtype=itp, device=dev)
+        parents_indices = self._parental_sampling(num_parents, num_crossovers, 2, dev).T
         children = t.zeros((num_children, dim), dtype=ptp, device=dev)
 
         position_mask = t.repeat_interleave(t.arange(dim, device=dev, dtype=t.int32)[None,:], repeats=num_crossovers, dim=0)

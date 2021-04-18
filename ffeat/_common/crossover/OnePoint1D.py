@@ -8,6 +8,7 @@ from typing import Tuple, Any, Dict, Union
 import torch as t
 from ffeat import Pipe
 from ._Shared import _Shared
+from ffeat.utils import parental_sampling as _PS
 
 
 # TODO what to do with multiple dimensions
@@ -16,10 +17,12 @@ class OnePoint1D(Pipe, _Shared):
                  offsprings: Union[int, float],
                  replace_parents: bool = True,
                  in_place: bool = True,
-                 discard_parents: bool = False):
+                 discard_parents: bool = False,
+                 parental_sampling = _PS.randint):
         if isinstance(offsprings, int) and offsprings % 2 != 0:
             raise ValueError("Number of offsprings must be even")
         _Shared.__init__(self, offsprings, replace_parents, in_place, discard_parents)
+        self._parental_sampling = parental_sampling
 
     def __call__(self, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         itp = t.long
@@ -30,8 +33,8 @@ class OnePoint1D(Pipe, _Shared):
         num_crossovers = self._offsprings // 2 if isinstance(self._offsprings, int) else int(len(population) * self._offsprings / 2.0)
         num_children = num_crossovers * 2
 
-        crossover_indices = t.randint(dim - 1, size=(num_crossovers,), dtype=itp, device=dev) + 1
-        parents_indices = t.randint(num_parents, (2, num_crossovers), dtype=itp, device=dev)
+        crossover_indices = t.randint(1, dim, size=(num_crossovers,), dtype=itp, device=dev)
+        parents_indices = self._parental_sampling(num_parents, num_crossovers, 2, dev).T
         children = t.zeros((num_children, dim), dtype=ptp, device=dev)
 
         position_mask = t.repeat_interleave(t.arange(dim, device=dev)[None,:], repeats=num_crossovers, dim=0)

@@ -106,6 +106,21 @@ class TournamentTest(unittest.TestCase):
         (newpop,), kargs = s(fitness, pop)
         self.assertEqual(newpop.device, t.device('cuda:0'))
 
+    def test_parental_sampling(self):
+        s = selection.Tournament(40, parental_sampling=ffeat.utils.parental_sampling.multinomial)
+        pop, fitness = t.rand((100,60)), t.randn((100,))
+        (newpop,), kargs = s(fitness, pop)
+        self.assertEqual(newpop.shape, (40,60))
+        self.assertIsNot(newpop, pop)
+
+    @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
+    def test_parental_sampling_cuda(self):
+        s = selection.Tournament(40, parental_sampling=ffeat.utils.parental_sampling.multinomial)
+        pop, fitness = t.rand((100,60), device='cuda'), t.randn((100,), device='cuda')
+        (newpop,), kargs = s(fitness, pop)
+        self.assertEqual(newpop.shape, (40,60))
+        self.assertIsNot(newpop, pop)
+
 
 if __name__ == '__main__':
     unittest.main()
