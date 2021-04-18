@@ -13,6 +13,6 @@ class Position(Pipe):
         self._min = min
         self._max = max
 
-    def __call__(self, position, velocities, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+    def __call__(self, position, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         position.clip_(self._min, self._max)
-        return (position, velocities), kwargs
+        return (position, *args), kwargs

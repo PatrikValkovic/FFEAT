@@ -60,5 +60,5 @@ class AddFromCauchy(AddFromDistribution):
 
     def __call__(self, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         if isinstance(self._scale, Callable):
-            self._distribution = self._handle_parameter(t.distributions.Normal(0.0, self._scale(*args, **kwargs)))
+            self._distribution = self._handle_parameter(t.distributions.Cauchy(0.0, self._scale(*args, **kwargs)))
         return super().__call__(*args, **kwargs)
