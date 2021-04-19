@@ -51,12 +51,13 @@ class AdaptiveStep(ffeat.Pipe):
 
         better_offsprings = ofitnesses < fitnesses[parent_indices]
         num_better = t.sum(better_offsprings)
-        kargs['better_fraction'] = num_better / pop_size
+        kwargs['better_fraction'] = num_better / pop_size
         if num_better >= needs_better:
             self._current_std *= self._std_increase
         else:
             self._current_std *= self._std_decrease
         self._current_std = min(self._maximum_std, max(self._minimum_std, self._current_std))
+        kwargs['current_std'] = self._current_std
 
         if self._replace_only_better:
             population[parent_indices[better_offsprings]] = offsprings[better_offsprings]
