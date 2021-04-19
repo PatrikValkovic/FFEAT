@@ -38,7 +38,7 @@ class AdaptiveStep(ffeat.Pipe):
         pop_size = len(population)
         dim = population.shape[1:]
         num_parents = self._mutate_members if isinstance(self._mutate_members, int) else int(pop_size * self._mutate_members)
-        needs_better = self._better_to_increase if isinstance(self._better_to_increase, float) else int(pop_size * self._better_to_increase)
+        needs_better = self._better_to_increase if isinstance(self._better_to_increase, int) else int(pop_size * self._better_to_increase)
         dist = t.distributions.Normal(0.0, self._current_std)
 
         if num_parents == pop_size:

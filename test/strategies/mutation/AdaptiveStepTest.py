@@ -134,7 +134,7 @@ class AddFromNormTest(unittest.TestCase):
             ffeat.strategies.mutation.AdaptiveStep(
                 0.4, 1.5, ffeat.strategies.evaluation.Evaluation(_f),
                 replace_parents=False,
-                mutate_members=40,
+                mutate_members=60,
                 minimum_std=0.001, maximum_std=0.9
             ),
             ffeat.strategies.selection.Tournament(100),
@@ -154,7 +154,7 @@ class AddFromNormTest(unittest.TestCase):
             ffeat.strategies.mutation.AdaptiveStep(
                 0.4, 1.5, ffeat.strategies.evaluation.Evaluation(_f),
                 replace_parents=False,
-                mutate_members=40,
+                mutate_members=60,
                 minimum_std=1e-12, maximum_std=0.9
             ),
             ffeat.strategies.selection.Tournament(100),
