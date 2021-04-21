@@ -15,20 +15,16 @@ class _Differential(Pipe):
     def __init__(self,
                  parent_fitnesses,
                  report_offspring_fitness,
-                 num_offsprings: int = None,
-                 fraction_offsprings: float = None,
+                 offsprings: Union[int, float],
                  crossover_probability: Union[_FDU, Callable[..., _FDU]] = 0.9,
                  differential_weight: Union[_FDU, Callable[..., _FDU]] = 0.8,
                  evaluation=None,
                  replace_parents: bool = True,
                  replace_only_better: bool = False,
                  discard_parents: bool = False):
-        if num_offsprings is None and fraction_offsprings is None:
-            raise ValueError("Either number of offsprings or a percentage must be provided")
         if replace_only_better and evaluation is None:
             raise ValueError("If you want to replace with better, evaluation must be provided")
-        self._num_offsprings = num_offsprings
-        self._fraction_offsprings = fraction_offsprings
+        self._offsprings = offsprings
         self._CR = self._handle_parameter(crossover_probability)
         self._F = self._handle_parameter(differential_weight)
         self._replace_parents = replace_parents
@@ -42,7 +38,7 @@ class _Differential(Pipe):
         dev = population.device
         pop_len = len(population)
         dim = population.shape[1:]
-        num_children = self._num_offsprings if self._num_offsprings is not None else int(pop_len * self._fraction_offsprings)
+        num_children = self._offsprings if isinstance(self._offsprings, int) else int(pop_len * self._offsprings)
         CR = self._CR(population, *args, **kwargs)
         if not isinstance(CR, t.distributions.Distribution):
             CR = t.distributions.Uniform(CR-1e-6, CR+1e-6)
@@ -86,8 +82,7 @@ class _Differential(Pipe):
 
 class Differential(_Differential):
     def __init__(self,
-                 num_offsprings: int = None,
-                 fraction_offsprings: float = None,
+                 offsprings: Union[int, float],
                  crossover_probability: Union[_FDU, Callable[..., _FDU]] = 0.9,
                  differential_weight: Union[_FDU, Callable[..., _FDU]] = 0.8,
                  evaluation=None,
@@ -96,15 +91,14 @@ class Differential(_Differential):
                  discard_parents: bool = False):
         super().__init__(lambda parents, indices, *args, **kwargs: evaluation(parents[indices], *args, **kwargs),
                          lambda *args, **kwargs: None,
-                         num_offsprings, fraction_offsprings, crossover_probability,
+                         offsprings, crossover_probability,
                          differential_weight, evaluation,
                          replace_parents, replace_only_better, discard_parents)
 
 
 class DifferentialWithFitness(_Differential):
     def __init__(self,
-                 num_offsprings: int = None,
-                 fraction_offsprings: float = None,
+                 offsprings: Union[int, float],
                  crossover_probability: Union[_FDU, Callable[..., _FDU]] = 0.9,
                  differential_weight: Union[_FDU, Callable[..., _FDU]] = 0.8,
                  evaluation=None,
@@ -113,7 +107,7 @@ class DifferentialWithFitness(_Differential):
                  discard_parents: bool = False):
         super().__init__(self.__handle_parent_fitnesses,
                          self.__report_offspring_fitness,
-                         num_offsprings, fraction_offsprings, crossover_probability,
+                         offsprings, crossover_probability,
                          differential_weight, evaluation,
                          replace_parents, replace_only_better, discard_parents)
         self.__fitnesses = None

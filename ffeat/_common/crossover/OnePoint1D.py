@@ -8,7 +8,7 @@ from typing import Tuple, Any, Dict, Union
 import torch as t
 from ffeat import Pipe
 from ._Shared import _Shared
-from ffeat.utils import parental_sampling as _PS
+from ffeat.utils._parental_sampling import randint
 
 
 # TODO what to do with multiple dimensions
@@ -18,7 +18,7 @@ class OnePoint1D(Pipe, _Shared):
                  replace_parents: bool = True,
                  in_place: bool = True,
                  discard_parents: bool = False,
-                 parental_sampling = _PS.randint):
+                 parental_sampling = randint):
         if isinstance(offsprings, int) and offsprings % 2 != 0:
             raise ValueError("Number of offsprings must be even")
         _Shared.__init__(self, offsprings, replace_parents, in_place, discard_parents)

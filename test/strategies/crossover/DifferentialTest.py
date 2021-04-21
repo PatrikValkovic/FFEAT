@@ -20,7 +20,7 @@ class DifferentialTest(unittest.TestCase):
         self.assertIs(newpop, p)
 
     def test_fraction(self):
-        d = crossover.Differential(fraction_offsprings=0.6)
+        d = crossover.Differential(0.6)
         p = t.randn((1000, 400))
         (newpop,), kargs = d(p)
         self.assertEqual(newpop.shape, (1000,400))
@@ -59,7 +59,7 @@ class DifferentialTest(unittest.TestCase):
         self.assertTrue(t.all(t.abs(nf - real_fitness) < 1e-6))
 
     def test_fraction_no_replace(self):
-        d = crossover.Differential(fraction_offsprings=0.6, replace_parents=False)
+        d = crossover.Differential(0.6, replace_parents=False)
         p = t.randn((1000, 400))
         (newpop,), kargs = d(p)
         self.assertEqual(newpop.shape, (1600,400))
@@ -138,10 +138,6 @@ class DifferentialTest(unittest.TestCase):
         real_fitness = _f(np)
         self.assertTrue(t.all(t.abs(nf - real_fitness) < 1e-6))
 
-    def test_no_offspring_count(self):
-        with self.assertRaises(ValueError):
-            crossover.Differential()
-
     @repeat(5)
     def test_in_alg(self):
         _f = lambda x: t.sum(t.pow(x, 2), dim=-1)
@@ -184,7 +180,7 @@ class DifferentialTest(unittest.TestCase):
         alg = ffeat.strategies.EvolutionStrategy(
             ffeat.strategies.initialization.Uniform(100, -5.0, 5.0, 40, device='cuda:0'),
             ffeat.strategies.crossover.Differential(
-                fraction_offsprings=0.6,
+                0.6,
                 crossover_probability=lambda *_, **k: t.distributions.Normal(0.8, 1.0 * k['iteration'] / k['max_iteration']),
                 differential_weight=lambda *_, **k: t.distributions.Normal(0.3, 1.0 * k['iteration'] / k['max_iteration']),
                 replace_only_better=True,
