@@ -26,7 +26,7 @@ class TwoPoint1D(Pipe, _Shared):
 
     def __call__(self, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         itp = t.long
-        ptp = population.dtype
+        ptp = population.dtype if population.dtype != t.bool else t.uint8
         dev = population.device
         num_parents = len(population)
         dim = population.shape[1]
@@ -66,6 +66,7 @@ class TwoPoint1D(Pipe, _Shared):
         mask = t.logical_not(mask, out=mask)
         children[:num_crossovers].add_(population[parents_indices[1]] * mask)
         children[-num_crossovers:].add_(population[parents_indices[0]] * mask)
+        children = children.to(population.dtype)
 
         pop = self._handle_pop(population, children, parents_indices)
 

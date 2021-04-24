@@ -4,7 +4,6 @@
 # 3/11/2021
 #
 ###############################
-
 from ffeat._common.selection.Elitism import Elitism
 from ffeat._common.selection.Tournament import Tournament
 from ffeat._common.selection.Roulette import Roulette

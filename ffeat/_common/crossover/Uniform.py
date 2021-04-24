@@ -26,7 +26,7 @@ class Uniform(Pipe, _Shared):
         self._parental_sampling = parental_sampling
 
     def __call__(self, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
-        ptype = population.dtype
+        ptype = population.dtype if population.dtype != t.bool else t.uint8
         dev = population.device
         num_parents = len(population)
         dim = population.shape[1:]
@@ -43,6 +43,7 @@ class Uniform(Pipe, _Shared):
         crossover_mask = t.logical_not(crossover_mask, out=crossover_mask)
         children[:num_crossovers].add_(population[parents_indices[1]] * crossover_mask)
         children[num_crossovers:].add_(population[parents_indices[0]] * crossover_mask)
+        children = children.to(population.dtype)
 
         pop = self._handle_pop(population, children, parents_indices)
 
