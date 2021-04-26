@@ -31,6 +31,6 @@ class ExponentialScale(Pipe):
         fitnesses = t.sub(fitnesses, fmin, out=fitnesses)
         fitnesses = t.pow(base, fitnesses, out=fitnesses)
         fitnesses = t.add(fitnesses, min - 1, out=fitnesses)
-        kwargs['fitness'] = fitnesses
+        kwargs['new_fitness'] = fitnesses
 
         return (fitnesses, *args), kwargs

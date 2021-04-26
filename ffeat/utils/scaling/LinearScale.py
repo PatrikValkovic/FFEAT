@@ -30,7 +30,7 @@ class LinearScale(Pipe):
         fitnesses = t.sub(fitnesses, fmin, out=fitnesses)
         fitnesses = t.multiply(fitnesses, (max - min) / fmax, out=fitnesses)
         fitnesses = t.add(fitnesses, min, out=fitnesses)
-        kwargs['fitness'] = fitnesses
+        kwargs['new_fitness'] = fitnesses
 
         return (fitnesses, *args), kwargs
 

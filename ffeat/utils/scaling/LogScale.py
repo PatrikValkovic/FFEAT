@@ -34,6 +34,6 @@ class LogScale(Pipe):
         fitnesses = t.log(fitnesses, out=fitnesses)
         fitnesses = t.divide(fitnesses, baselog, out=fitnesses)
         fitnesses = t.add(fitnesses, min, out=fitnesses)
-        kwargs['fitness'] = fitnesses
+        kwargs['new_fitness'] = fitnesses
 
         return (fitnesses, *args), kwargs

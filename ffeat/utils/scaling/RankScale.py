@@ -29,9 +29,11 @@ class RankScale(Pipe):
 
         num = len(fitnesses)
         step = (max - min) / num
-        order = t.argsort(fitnesses).type(fitnesses.dtype)
-        new_fitnesses = t.multiply(order, t.tensor(step), out=order)
-        new_fitnesses = t.add(new_fitnesses, min, out=new_fitnesses)
-        kwargs['fitness'] = new_fitnesses
+        order = t.argsort(fitnesses)
+        tmpfitnes = t.arange(0, num, device=fitnesses.device, dtype=fitnesses.dtype)
+        tmpfitnes.multiply_(step).add_(min)
+        newfitness = t.empty_like(fitnesses)
+        newfitness[order] = tmpfitnes
+        kwargs['new_fitness'] = newfitness
 
-        return (new_fitnesses, *args), kwargs
+        return (newfitness, *args), kwargs
