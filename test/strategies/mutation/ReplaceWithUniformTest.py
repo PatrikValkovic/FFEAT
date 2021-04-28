@@ -112,7 +112,7 @@ class ReplaceWithUniformTest(unittest.TestCase):
         alg = ffeat.strategies.EvolutionStrategy(
             ffeat.strategies.initialization.Uniform(100, -5.0, 5.0, 40),
             ffeat.strategies.evaluation.Evaluation(_f),
-            ffeat.strategies.selection.Elitism(3,
+            ffeat.strategies.selection.Elitism(40,
                ffeat.strategies.selection.Tournament(100),
                ffeat.strategies.crossover.OnePoint1D(80, replace_parents=False),
                ffeat.strategies.mutation.ReplaceUniform(-1, 1, 0.01),
@@ -120,7 +120,7 @@ class ReplaceWithUniformTest(unittest.TestCase):
             iterations=1000
         )
         (pop,), kargs = alg()
-        self.assertTrue(t.all(_f(pop) < 1))
+        self.assertTrue(t.all(_f(pop) < 2))
 
     @unittest.skipIf(not t.cuda.is_available(), 'CUDA not available')
     @repeat(5)
@@ -129,7 +129,7 @@ class ReplaceWithUniformTest(unittest.TestCase):
         alg = ffeat.strategies.EvolutionStrategy(
             ffeat.strategies.initialization.Uniform(100, -5.0, 5.0, 40, device='cuda'),
             ffeat.strategies.evaluation.Evaluation(_f),
-            ffeat.strategies.selection.Elitism(3,
+            ffeat.strategies.selection.Elitism(40,
                ffeat.strategies.selection.Tournament(100),
                ffeat.strategies.crossover.OnePoint1D(80, replace_parents=False),
                ffeat.strategies.mutation.ReplaceUniform(-1, 1, 0.01),
@@ -137,7 +137,7 @@ class ReplaceWithUniformTest(unittest.TestCase):
             iterations=1000
         )
         (pop,), kargs = alg()
-        self.assertTrue(t.all(_f(pop) < 1))
+        self.assertTrue(t.all(_f(pop) < 2))
 
 
 if __name__ == '__main__':

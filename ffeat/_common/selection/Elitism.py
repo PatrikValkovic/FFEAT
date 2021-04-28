@@ -23,20 +23,15 @@ class Elitism(Pipe):
     def __call__(self, fitnesses, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         originally = len(population)
         to_select = self._num_elites(fitnesses, population, *args, **kwargs)
-        if isinstance(to_select, int):
-            to_select = to_select / originally
-        if not isinstance(to_select, float):
-            raise ValueError(f"Fraction of elites needs to be float, {type(to_select)} instead")
-        if to_select < 0.0 or to_select > 1.0:
-            raise ValueError("Fraction of elites must be in range [0.0, 1.0]")
-        to_select = to_select if not self._maximization else 1.0 - to_select
+        if isinstance(to_select, float):
+            to_select = int(to_select * originally)
+        if not isinstance(to_select, int):
+            raise ValueError(f"Number of elites needs to be int, {type(to_select)} instead")
+        if to_select > originally:
+            raise ValueError(f"Number attempt to get {to_select} elites for population of size {originally}")
 
-        quantile = t.quantile(fitnesses, to_select)
-        elites_indices = fitnesses >= quantile if self._maximization else fitnesses <= quantile
+        elites_indices = t.topk(fitnesses, to_select, largest=self._maximization)[1]
         elites = t.clone(population[elites_indices])
         (population, *args), kargs = self.__follow(fitnesses, population, *args, **kwargs)
-        if len(population) != len(elites_indices):
-            population[t.where(elites_indices)[0]] = elites
-        else:
-            population[elites_indices] = elites
+        population[elites_indices] = elites
         return (population, *args), kwargs
