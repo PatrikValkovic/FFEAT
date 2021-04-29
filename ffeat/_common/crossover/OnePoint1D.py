@@ -37,7 +37,7 @@ class OnePoint1D(Pipe, _Shared):
         parents_indices = self._parental_sampling(num_parents, num_crossovers, 2, dev).T
         children = t.zeros((num_children, dim), dtype=ptp, device=dev)
 
-        position_mask = t.repeat_interleave(t.arange(dim, device=dev)[None,:], repeats=num_crossovers, dim=0)
+        position_mask = t.arange(dim, device=dev).as_strided((num_crossovers,dim), (0,1))
         lpos = (position_mask < crossover_indices[:, None]).type(t.int8)
         children[:num_crossovers].add_(population[parents_indices[0]] * lpos)
         children[num_crossovers:].add_(population[parents_indices[1]] * lpos)

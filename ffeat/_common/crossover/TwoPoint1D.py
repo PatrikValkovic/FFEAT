@@ -57,7 +57,7 @@ class TwoPoint1D(Pipe, _Shared):
         parents_indices = self._parental_sampling(num_parents, num_crossovers, 2, dev).T
         children = t.zeros((num_children, dim), dtype=ptp, device=dev)
 
-        position_mask = t.repeat_interleave(t.arange(dim, device=dev, dtype=t.int32)[None,:], repeats=num_crossovers, dim=0)
+        position_mask = t.arange(dim, device=dev).as_strided((num_crossovers,dim), (0,1))
         mask_first = position_mask >= first_crossover[:, None]
         mask_second = position_mask < second_crossover[:, None]
         mask = t.logical_and(mask_first, mask_second, out=mask_second).type(t.int8)
