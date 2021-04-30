@@ -7,6 +7,7 @@
 from typing import Tuple, Any, Dict, Union, Callable
 import torch as t
 from ffeat import Pipe
+from torch.cuda import cudart
 
 _IFU = Union[int, float]
 
@@ -31,15 +32,14 @@ class StochasticUniversalSampling(Pipe):
         if t.any(fitnesses < 0):
             raise ValueError("Fitness with negative values")
 
-        normalized = t.divide(fitnesses, t.sum(fitnesses), out=fitnesses)
-        cumulative = t.cumsum(normalized, dim=0, out=normalized)
+        cumulative = t.cumsum(fitnesses, dim=0, out=fitnesses)
+        max_val = cumulative[-1]
         to_pick_fitnesses = t.arange(to_select, dtype=t.float32, device=dev)
-        to_pick_fitnesses = t.multiply(
-            to_pick_fitnesses,
-            t.tensor(1 / to_select, device=dev, dtype=t.float32),
-            out=to_pick_fitnesses
+        to_pick_fitnesses = to_pick_fitnesses.multiply_(
+            max_val / to_select
         )
-        to_pick_fitnesses.add_(t.rand(1, device=dev, dtype=t.float32) / to_select)
+        to_pick_fitnesses.add_(t.rand(1, device=dev, dtype=t.float32) * max_val / to_select)
         indices = t.sum(cumulative[:, None] < to_pick_fitnesses[None, :], dim=0, dtype=t.long)
-        new_population = population[indices.to(population.device)]
+        indices = t.minimum(indices, t.tensor(originally-1, device=indices.device, dtype=t.long), out=indices)
+        new_population = population[indices]
         return (new_population, *args), kwargs

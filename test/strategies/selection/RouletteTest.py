@@ -44,7 +44,7 @@ class RouletteTest(unittest.TestCase):
         s = selection.Roulette(1.0)
         old_pop = t.randn((1000,40))
         old_fitness = t.sum(t.pow(old_pop, 2.0), dim=-1)
-        (new_pop,), kargs = s(old_fitness, old_pop)
+        (new_pop,), kargs = s(t.clone(old_fitness), old_pop)
         new_fitness = t.sum(t.pow(new_pop, 2.0), dim=-1)
         self.assertGreater(t.mean(new_fitness), t.mean(old_fitness))
 
