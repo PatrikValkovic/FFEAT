@@ -4,10 +4,10 @@
 # 3/18/2021
 #
 ###############################
-from typing import Tuple, Any, Dict, List
+from typing import List
 import math
 import torch as t
-from ffeat import Pipe, flow
+from ffeat import Pipe, flow, STANDARD_REPRESENTATION
 from .neighborhood.Neighborhood import Neighborhood
 from .update.Update import Update
 from ._private.UpdateLocalBest import UpdateLocalBest
@@ -19,6 +19,9 @@ from .clip.Position import Position
 
 # Minimize
 class PSO(Pipe):
+    """
+    Particle Swarm Optimisation algorithm. The algorithm expects minimization problem.
+    """
     def __init__(self,
                  position_initialization: Pipe,
                  velocity_initialization: Pipe,
@@ -29,6 +32,18 @@ class PSO(Pipe):
                  clip_velocity: _Velocity = None,
                  clip_position: Position = None,
                  iterations: int = 100):
+        """
+        Particle Swarm Optimisation algorithm. The algorithm expects minimization problem.
+        :param position_initialization: Pipe to initialize particles' positions.
+        :param velocity_initialization: Pipe to initialize particles' velocities.
+        :param evaluation: Pipe to evaluate the population.
+        :param neighborhood_definition: Class defining the neighborhood available at `ffeat.pso.neighborhood`.
+        :param velocity_update: Velocity update algorithm available at `ffeat.pso.update`.
+        :param measurements_termination: Pipes to measure, report, and terminate the algorithm.
+        :param clip_velocity: Optional velocity clip operator.
+        :param clip_position: Optional velocity clip operator.
+        :param iterations: Number of iterations to perform, None to infinite. Default 100.
+        """
         self.__flow = flow.Sequence(
             flow.Parallel(
                 position_initialization,
@@ -116,5 +131,11 @@ class PSO(Pipe):
             # position
         )
 
-    def __call__(self, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+    def __call__(self, *args, **kwargs) -> STANDARD_REPRESENTATION:
+        """
+        Run the PSO algorithm.
+        :param args: Arguments.
+        :param kwargs: Keyword arguments.
+        :return: Particles.
+        """
         return self.__flow(*args, **kwargs)

@@ -12,15 +12,32 @@ from .Static import Static
 
 
 class _Grid(Neighborhood):
+    """
+    Grid neighborhood in arbitrary dimension.
+    """
     def __init__(self,
                  type: Literal["linear", "compact", "diamond"],
                  size: Union[float, int, Callable[..., Union[int, float]]],
                  shape: Tuple[int, ...]):
+        """
+        Grid neighborhood in arbitrary dimension.
+        :param type: Type of the neighborhood. So far only linear is supported.
+        :param size: Size of the neighborhood in one direction only. May be float (then it is fraction of the original
+        population to select), or integer (then it is number of individuals to select).
+        :param shape: Shape of the topology.
+        """
         self._type = type
         self._size = self._handle_parameter(size)
         self._shape = shape
 
     def __call__(self, fitnesses, position, **kwargs) -> t.Tensor:
+        """
+        Creates grid neighborhood and returns it.
+        :param fitnesses: Current particles' fitness.
+        :param position: Current particle's positions.
+        :param kwargs: Keyword arguments.
+        :return: Tensor of indices assigning each particle its neighborhood.
+        """
         pop_size = len(fitnesses)
         dimensions = len(self._shape)
         size = self._handle_size(self._size(fitnesses, position, **kwargs), pop_size)
@@ -53,11 +70,21 @@ class _Grid(Neighborhood):
 
 
 class Grid(Static):
+    """
+    Grid neighborhood in arbitrary dimension.
+    """
     def __init__(self,
                  type: Literal["linear", "compact", "diamond"],
                  size: Union[float, int, Callable[..., Union[int, float]]],
                  shape: Tuple[int, ...]
                  ):
+        """
+        Grid neighborhood in arbitrary dimension.
+        :param type: Type of the neighborhood. So far only linear is supported.
+        :param size: Size of the neighborhood in one direction only. May be float (then it is fraction of the original
+        population to select), or integer (then it is number of individuals to select).
+        :param shape: Shape of the topology.
+        """
         super().__init__(_Grid(type, size, shape))
 
 
@@ -65,10 +92,24 @@ class _Grid2D(_Grid):
     def __init__(self,
                  type: Literal["linear", "compact", "diamond"],
                  size: Union[float, int, Callable[..., Union[int, float]]],
-                 shape: Tuple[int, ...]):
+                 shape: Tuple[int, int]):
+        """
+        Grid neighborhood in two dimensions.
+        :param type: Type of the neighborhood.
+        :param size: Size of the neighborhood in one direction only. May be float (then it is fraction of the original
+        population to select), or integer (then it is number of individuals to select).
+        :param shape: Shape of the topology.
+        """
         super().__init__(type, size, shape)
 
     def __call__(self, fitnesses, position, **kwargs) -> t.Tensor:
+        """
+        Creates random neighborhood and returns it.
+        :param fitnesses: Current particles' fitness.
+        :param position: Current particle's positions.
+        :param kwargs: Keyword arguments.
+        :return: Tensor of indices assigning each particle its neighborhood.
+        """
         pop_size = len(fitnesses)
         size = self._handle_size(self._size(fitnesses, position, **kwargs), pop_size)
         if pop_size != np.prod(self._shape):
@@ -112,24 +153,57 @@ class _Grid2D(_Grid):
 
 
 class Grid2D(Static):
+    """
+    Grid neighborhood in two dimensions.
+    """
     def __init__(self,
                  type: Literal["linear", "compact", "diamond"],
                  size: Union[float, int, Callable[..., Union[int, float]]],
-                 shape: Tuple[int, ...]):
+                 shape: Tuple[int, int]):
+        """
+        Grid neighborhood in two dimensions.
+        :param type: Type of the neighborhood.
+        :param size: Size of the neighborhood in one direction only. May be float (then it is fraction of the original
+        population to select), or integer (then it is number of individuals to select).
+        :param shape: Shape of the topology.
+        """
         if len(shape) != 2:
             raise ValueError("Not a 2D grid type")
         super().__init__(_Grid2D(type, size, shape))
 
 
 class _Circle(_Grid):
+    """
+    Circle neighborhood.
+    """
     def __init__(self, size: Union[float, int, Callable[..., Union[int, float]]]):
+        """
+        Circle neighborhood.
+        :param size: Size of the neighborhood in one direction only. May be float (then it is fraction of the original
+        population to select), or integer (then it is number of individuals to select).
+        """
         super().__init__('linear', size, None)
 
     def __call__(self, fitnesses, position, **kwargs) -> t.Tensor:
+        """
+        Creates random neighborhood and returns it.
+        :param fitnesses: Current particles' fitness.
+        :param position: Current particle's positions.
+        :param kwargs: Keyword arguments.
+        :return: Tensor of indices assigning each particle its neighborhood.
+        """
         self._shape = len(fitnesses),
         return super().__call__(fitnesses, position, **kwargs)
 
 
 class Circle(Static):
+    """
+    Circle neighborhood.
+    """
     def __init__(self, size: Union[float, int, Callable[..., Union[int, float]]]):
+        """
+        Circle neighborhood.
+        :param size: Size of the neighborhood in one direction only. May be float (then it is fraction of the original
+        population to select), or integer (then it is number of individuals to select).
+        """
         super().__init__(_Circle(size))

@@ -13,16 +13,32 @@ _FDU = Union[float, Callable[..., float], t.distributions.Distribution, Callable
 
 
 class PSO2006(Update):
+    """
+    SPSO2006 velocity update algorithm.
+    """
     def __init__(self,
                  inertia: _FDU = 1 / (2 * math.log(2)),
                  local_c: _FDU = 0.5 + math.log(2),
                  global_c: _FDU = 0.5 + math.log(2)
                  ):
+        """
+        PSO2006 velocity update algorithm.
+        :param inertia: Weight inertia.
+        :param local_c: Cognitive acceleration coefficient.
+        :param global_c: Social acceleration coefficient.
+        """
         self._inertia = self._handle_parameter(inertia)
         self._local_c = self._handle_parameter(local_c)
         self._global_c = self._handle_parameter(global_c)
 
     def __call__(self, *args, **kwargs) -> Tuple[Tuple[t.Tensor], Dict[str, Any]]:
+        """
+        Updates particles' velocities.
+        :param args: Arguments expected in the order positions, velocities, fitness of global best positions,
+        global best position, fitness of local best positions, local best positions
+        :param kwargs: Keyword arguments.
+        :return: New velocities.
+        """
         position, velocities, fitness_gbest, positions_gbest, fitness_lbest, positions_lbest = args
         pop_size = len(position)
         ptype = position.dtype
