@@ -10,12 +10,13 @@ from ffeat import Pipe
 
 
 class Evaluation(Pipe):
+    FITNESS_KWORD_ARG = "orig_fitness"
     def __init__(self, evaluation_fn: Callable):
         self.evaluation_fn = evaluation_fn
 
     def __call__(self, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
         f = self.evaluation_fn(population)
-        kwargs["orig_fitness"] = f
+        kwargs[Evaluation.FITNESS_KWORD_ARG] = f
         return (f, population, *args), kwargs
 
 

@@ -4,22 +4,39 @@
 # 3/16/2021
 #
 ###############################
-from typing import Union, Callable, Tuple, Any, Dict
+from typing import Union, Callable
 import math
 import torch as t
-from ffeat import Pipe
+from ffeat import Pipe, STANDARD_REPRESENTATION
+from ffeat._common.Evaluation import Evaluation
 
 _IFU = Union[int, float]
 
 
 class LogScale(Pipe):
+    """
+    Scale the fitness in logarithmic manner, such that the smallest value is equal `minimum`, and the highest `maximum`.
+    Logarithmic scaling makes big difference to the beginning of the population.
+    """
     def __init__(self,
                  minimum: Union[_IFU, Callable[..., _IFU]],
                  maximum: Union[_IFU, Callable[..., _IFU]]):
+        """
+        Constructor.
+        :param minimum: Minimum value of the new fitness.
+        :param maximum: Maximum value of the new fitness.
+        """
         self._minimum = self._handle_parameter(minimum)
         self._maximum = self._handle_parameter(maximum)
 
-    def __call__(self, fitnesses, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+    def __call__(self, fitnesses, *args, **kwargs) -> STANDARD_REPRESENTATION:
+        """
+        Logarithmically scale the fitness.
+        :param fitnesses: Fitness values of the population.
+        :param args: Arguments.
+        :param kwargs: Keyword arguments.
+        :return: `ffeat.STANDARD_REPRESENTATION` where first argument is scaled fitness and rest is passed along.
+        """
         min = self._minimum(fitnesses, *args, **kwargs)
         if not isinstance(min, float):
             min = float(min)
@@ -34,6 +51,6 @@ class LogScale(Pipe):
         fitnesses = t.log(fitnesses, out=fitnesses)
         fitnesses = t.divide(fitnesses, baselog, out=fitnesses)
         fitnesses = t.add(fitnesses, min, out=fitnesses)
-        kwargs['new_fitness'] = fitnesses
+        kwargs[Evaluation.FITNESS_KWORD_ARG] = fitnesses
 
         return (fitnesses, *args), kwargs

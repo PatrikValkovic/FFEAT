@@ -23,7 +23,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Patrik Valkovic",
     license="GNU LGPLv3",
-    packages=find_packages(include=('ffeat*',)),
+    packages=find_packages(include=('ffeat*',), exclude=('ffeat.cma')),
     install_requires=[
         "torch",
         "numpy",

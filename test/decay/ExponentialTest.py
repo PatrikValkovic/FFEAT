@@ -41,6 +41,11 @@ class ExponentialTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             decay.Exponential(1.0)
 
+    def test_no_max_steps(self):
+        d = decay.Exponential(10.0, 2.0)
+        with self.assertRaises(ValueError):
+            d(iteration=5)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -5,11 +5,20 @@
 #
 ###############################
 from typing import Tuple, Any, Dict
-from .Pipe import Pipe
+from .Pipe import Pipe, STANDARD_REPRESENTATION
 
 
 class NormalizedPipe(Pipe):
-    def __call__(self, argument) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+    """
+    Operator that transform arguments into standard form.
+    """
+
+    def __call__(self, argument) -> STANDARD_REPRESENTATION:
+        """
+        Transform parameter into standard form. Accepts either single value, tuple, or tuple od tuple and dictionary.
+        :param argument: Argument to transform.
+        :return: Standard parameter form as a tuple of parameters (in tuple), and dictionary.
+        """
         if isinstance(argument, tuple) and \
                 len(argument) == 2 and \
                 isinstance(argument[0], tuple) and \

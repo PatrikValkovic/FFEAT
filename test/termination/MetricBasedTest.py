@@ -47,6 +47,26 @@ class StdBelowTest(unittest.TestCase):
         )()
         self.assertEqual(executed, 50-4+5)
 
+    def test_termination_should_return_population(self):
+        executed = 0
+        def _fn(_):
+            nonlocal executed
+            executed += 1
+            return t.full((100,), abs(executed - 50), dtype=t.float32)
+        (pop,), kargs = ffeat.strategies.EvolutionStrategy(
+            ffeat.strategies.initialization.Uniform(100, -5, 5, 40),
+            ffeat.strategies.evaluation.Evaluation(_fn),
+            ffeat.measure.FitnessMean(),
+            ffeat.utils.termination.MetricReached(
+                ffeat.measure.FitnessMean.ARG_NAME,
+                5, 4
+            ),
+            lambda fit,pop, **k: ((pop,), k),
+            iterations=100
+        )()
+        self.assertIn(ffeat.measure.FitnessMean.ARG_NAME, kargs)
+        self.assertIsNotNone(pop)
+
     def test_metric_reached_maximization(self):
         executed = 0
         def _fn(_):
@@ -59,7 +79,7 @@ class StdBelowTest(unittest.TestCase):
             ffeat.measure.FitnessMean(),
             ffeat.utils.termination.MetricReached(
                 ffeat.measure.FitnessMean.ARG_NAME,
-                5, -10, minimizations=False
+                5, -10, minimization=False
             ),
             iterations=100
         )()

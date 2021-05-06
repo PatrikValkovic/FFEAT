@@ -4,6 +4,10 @@
 # 3/16/2021
 #
 ###############################
+"""
+Module containing implementations that may come handy.
+Includes decays, fitness scaling, and early terminations.
+"""
 
 from . import decay
 from . import scaling
