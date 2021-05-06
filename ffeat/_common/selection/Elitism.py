@@ -4,23 +4,42 @@
 # 3/14/2021
 #
 ###############################
-from typing import Tuple, Any, Dict, Union, Callable
+from typing import Union, Callable
 import torch as t
-from ffeat import Pipe, flow
+from ffeat import Pipe, flow, STANDARD_REPRESENTATION
 
 _IFU = Union[int, float]
 
 
 class Elitism(Pipe):
+    """
+    Elitism operator. Copy elites from the population, provided pipes and then copies them back.
+    """
     def __init__(self,
                  num_elites: Union[_IFU, Callable[..., _IFU]],
                  *following_steps: Pipe,
                  maximization=False):
+        """
+        Elitism operator. Copy elites from the population, provided pipes and then copies them back.
+        :param num_elites: Number of elites. May be float (then it is fraction of the original population to select),
+        or integer (then it is number of individuals to select).
+        :param following_steps: Rest of the steps in the algorithm.
+        Expect of steps to return population without the fitness.
+        :param maximization: Whether it is maximization or minimization (default) problem.
+        """
         self._num_elites = self._handle_parameter(num_elites)
         self._maximization = maximization
         self.__follow = flow.Sequence(*following_steps)
 
-    def __call__(self, fitnesses, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+    def __call__(self, fitnesses, population, *args, **kwargs) -> STANDARD_REPRESENTATION:
+        """
+        Copy elites from the population, provided pipes and then copies them back.
+        :param fitnesses: Fitness values of the individuals in the same order as they are in the population.
+        :param population: Population, where the first dimension enumerate over the individuals.
+        :param args: Arguments to passed along.
+        :param kwargs: Keyword arguments to passed along.
+        :return: Population after rest of the operators applied and elites copied back into the population.
+        """
         originally = len(population)
         to_select = self._num_elites(fitnesses, population, *args, **kwargs)
         if isinstance(to_select, float):

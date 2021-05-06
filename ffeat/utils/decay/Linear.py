@@ -18,7 +18,7 @@ class Linear:
                  step: _IFU = None,
                  result_type=float):
         """
-        Constructor.
+        Linear decay rate, parameter decreases linearly from `start` to `min`.
         :param start: Start value.
         :param min: Optional minimum value.
         If the algorithm has NOT limited number of iterations, the parameter value will not decrease bellow.

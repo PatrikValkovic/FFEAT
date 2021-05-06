@@ -17,7 +17,7 @@ class Exponential:
                  rate: float = None,
                  result_type=float):
         """
-        Constructor.
+        Exponential decay rate, parameter decreases by the formula `start * rate ^ iteration`.
         :param start: Start value.
         :param min: Optional minimum value.
         If the algorithm has NOT limited number of iterations, the parameter value will not decrease bellow.

@@ -15,7 +15,7 @@ class MultiplicativeInverse(Pipe):
     """
     def __call__(self, fitnesses, *args, **kwargs) -> STANDARD_REPRESENTATION:
         """
-        Scale the fitness by its inverse value.
+        Scale the fitness by the formula new_x = 1 / x. Transform minimisation problem into maximisation one and vice versa.
         :param fitnesses: Fitness values of the population.
         :param args: Arguments.
         :param kwargs: Keyword arguments.

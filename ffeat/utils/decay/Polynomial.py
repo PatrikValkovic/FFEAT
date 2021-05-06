@@ -17,7 +17,7 @@ class Polynomial:
                  power: float,
                  result_type=float):
         """
-        Constructor.
+        Polynomial decay rate, parameter decreases by the formula `start * progress ^ power`.
         :param start: Start value.
         :param end: Minimum value in the end.
         :param power: Power of the polynomial.

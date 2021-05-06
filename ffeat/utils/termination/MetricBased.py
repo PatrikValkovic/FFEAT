@@ -29,7 +29,7 @@ class StdBellow(_BaseMetric):
     """
     def __init__(self, metric: str, step_into_account: int, threshold_value: float):
         """
-        Constructor.
+        Terminate the algorithm if metric standard deviation is bellow given threshold for a given number of steps.
         :param metric: Metric to measure.
         :param step_into_account: How many steps in the history the algorithm should look.
         :param threshold_value: The threshold value bellow which the algorithm will terminate.
@@ -53,7 +53,7 @@ class MetricReached(_BaseMetric):
     """
     def __init__(self, metric: str, for_steps: int, target_value: float, minimization = True):
         """
-        Constructor.
+        Terminate the algorithm if given metric reach given threshold and keep it for given number of steps.
         :param metric: Metric to measure.
         :param for_steps: How many steps should be the metric bellow or above threshold.
         If the algorithm should end immediately, pass value 1.

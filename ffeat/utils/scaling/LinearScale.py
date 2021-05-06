@@ -20,7 +20,7 @@ class LinearScale(Pipe):
                  minimum: Union[_IFU, Callable[..., _IFU]],
                  maximum: Union[_IFU, Callable[..., _IFU]]):
         """
-        Constructor.
+        Scale the fitness linearly, such that the smallest value is equal `minimum`, and the highest `maximum`.
         :param minimum: Minimum value of the new fitness.
         :param maximum: Maximum value of the new fitness.
         """

@@ -16,7 +16,7 @@ class _Base(ffeat.Pipe):
 
     def __init__(self, for_steps: int):
         """
-        Constructor.
+        Base class for early termination logic.
         :param for_steps: For how many steps to measure.
         """
         self._steps = for_steps
@@ -41,7 +41,7 @@ class _BaseMetric(_Base):
     """
     def __init__(self, metric: str, for_steps: int):
         """
-        Constructor.
+        Base class for early termination logic based on the metric measured before.
         :param metric: Metric to measure.
         :param for_steps: For how many steps to measure.
         """

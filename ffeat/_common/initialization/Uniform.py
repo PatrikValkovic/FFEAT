@@ -4,12 +4,15 @@
 # 3/17/2021
 #
 ###############################
-from typing import Tuple, Any, Dict, Union, List
+from typing import Tuple, Union, List
 import torch as t
-from ffeat import Pipe
+from ffeat import Pipe, STANDARD_REPRESENTATION
 
 
 class UniformInit(Pipe):
+    """
+    Initialize the population uniformly in the given interval.
+    """
     def __init__(self,
                  population_size: int,
                  min: Union[int, float, List[float], t.Tensor],
@@ -17,11 +20,20 @@ class UniformInit(Pipe):
                  dimension: Union[int, Tuple[int]] = None,
                  dtype: t.dtype = t.float32,
                  device: t.device = None):
+        """
+        Initialize the population uniformly in the given interval.
+        :param population_size: Number of individuals in the population.
+        :param min: Minimum value of the gene.
+        :param max: Maximum value of the gene.
+        :param dimension: Dimensions of each individual.
+        :param dtype: Torch type by which the population would be represented. By default `torch.float32`.
+        :param device: Device on which to allocate the population.
+        """
         self.population_size = population_size
         self.dtype = dtype
         self.device = device
         # handle dimension size
-        self.__dimension = dimension   # type: Tuple[int]
+        self.__dimension = dimension   # type: Tuple[int,...]
         if isinstance(self.__dimension, int):
             self.__dimension = (self.__dimension,)
         if self.__dimension is None and isinstance(max, t.Tensor):
@@ -55,7 +67,12 @@ class UniformInit(Pipe):
         if t.any(self.__max < self.__min):
             raise ValueError("Maximum can't be lower than minimum")
 
-    def __call__(self, **kargs) -> Tuple[Tuple[Any], Dict[str, Any]]:
+    def __call__(self, **kargs) -> STANDARD_REPRESENTATION:
+        """
+        Allocated the population and return it.
+        :param kargs: Keyword arguments passed along.
+        :return: Allocated population with provided keyword arguments.
+        """
         r = t.rand(tuple([self.population_size, *self.__dimension]), device=self.device)
         r = t.multiply(r, self.__max - self.__min, out=r).add_(self.__min)
         r = r.type(self.dtype)

@@ -22,7 +22,9 @@ class RankScale(Pipe):
                  minimum: Union[_IFU, Callable[..., _IFU]],
                  maximum: Union[_IFU, Callable[..., _IFU]]):
         """
-        Constructor.
+        Rewrite the fitness based on the order.
+        Individual with lowest value will have `minimum` value and the highest one will equal to `maximum`.
+        Remaining values will be distributed linearly in this interval.
         :param minimum: Minimum value of the new fitness.
         :param maximum: Maximum value of the new fitness.
         """

@@ -4,21 +4,43 @@
 # 3/9/2021
 #
 ###############################
-from typing import Tuple, Any, Dict
-from ffeat import Pipe
+from ffeat import Pipe, STANDARD_REPRESENTATION
 
 class Repeat(Pipe):
+    """
+    Repeat pipe in a loop.
+    Allows to specify, whether pipe's output should be passed back in the next iteration.
+    Allows to break the loop prematurely.
+    """
     def __init__(self, pipe: Pipe,
                  max_iterations=None,
                  *,
                  loop_arguments=True,
                  identifier=None):
+        """
+        Repeat pipe in a loop.
+        Allows to specify, whether pipe's output should be passed back in the next iteration.
+        Allows to break the loop prematurely.
+        :param pipe: Pipe to execute in loop.
+        :param max_iterations: Maximum number of iterations or None, if the loop should be infinite.
+        :param loop_arguments: True if output of the pipe should be passed back to it in the next iteration.
+        :param identifier: Loop identifier, allowing to break the loop using `{identifier}_break` keyword arguments.
+        """
         self._pipe = pipe
         self._max_iterations = max_iterations
         self._loop_arguments = loop_arguments
         self._identifier = identifier
 
-    def __call__(self, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+    def __call__(self, *args, **kwargs) -> STANDARD_REPRESENTATION:
+        """
+        Run the pipe in parallel.
+        Add `iteration` and `max_iteration` keyword arguments to the pipe.
+        Add `break` and `{identifier}_break` keyword arguments to the pipe. These are callable objects allowing early
+        termination of the loop. When called, the input to the pipe in the current iteration is returned.
+        :param args: Arguments.
+        :param kwargs: Keyword arguments.
+        :return: Output from the last execution of the pipe.
+        """
         def _iter():
             if self._max_iterations is None:
                 while True:
