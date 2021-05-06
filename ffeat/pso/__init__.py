@@ -4,6 +4,9 @@
 # 3/18/2021
 #
 ###############################
+"""
+Module implementing Particle Swarm Optimisation algorithm.
+"""
 from .PSO import PSO
 from . import update
 from . import neighborhood

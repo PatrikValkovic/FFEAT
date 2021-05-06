@@ -14,6 +14,10 @@ class Evaluation(Pipe):
     Evaluate the whole population at once.
     """
     FITNESS_KWORD_ARG = "orig_fitness"
+    """
+    Key under which it the fitness stored in keyword arguments.
+    """
+
     def __init__(self, evaluation_fn: Callable):
         """
         Evaluate the whole population at once.

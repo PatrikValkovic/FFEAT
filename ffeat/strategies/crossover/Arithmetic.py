@@ -6,13 +6,16 @@
 ###############################
 from typing import Tuple, Any, Dict, Union, Callable
 import torch as t
-from ffeat import Pipe
+from ffeat import Pipe, STANDARD_REPRESENTATION
 from ffeat._common.crossover._Shared import _Shared
 
 _FTU = Union[float, t.Tensor]
 
 
 class Arithmetic(Pipe, _Shared):
+    """
+    Arithmetic crossover.
+    """
     def __init__(self,
                  offsprings: Union[int, float],
                  parent_weight: Union[_FTU, Callable[..., _FTU]] = None,
@@ -20,11 +23,32 @@ class Arithmetic(Pipe, _Shared):
                  replace_parents: bool = True,
                  in_place: bool = True,
                  discard_parents: bool = False):
+        """
+        Arithmetic crossover.
+        :param offsprings: Number of offsprings to create. May be float (then it is fraction of the original population
+        to select), or integer (then it is number of individuals to select).
+        :param parent_weight: Parents' weights for the crossover. By default 1 / `num_parents`. May be callable and give
+        different weights each iteration and for each offspring.
+        :param num_parents: Number of parents for one offspring. By default 2.
+        :param replace_parents: Whether should offsprings replace their parents. The operator must create the same
+        number of offsprings as there are parents in order for this to work. By default true.
+        :param in_place: Whether the new population should be created inplace - in the same memory as the original
+        population. The new population size must be equal to the old one. By default true.
+        :param discard_parents: Whether to discard parents and return only offsprings. By default false.
+        If set to true ignores it ignores both options above.
+        """
         _Shared.__init__(self, offsprings, replace_parents, in_place, discard_parents)
         self._num_parents = self._handle_parameter(num_parents)
         self._parent_weight = self._handle_parameter(parent_weight)
 
-    def __call__(self, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+    def __call__(self, population, *args, **kwargs) -> STANDARD_REPRESENTATION:
+        """
+        Apply arithmetic crossover on the population.
+        :param population: Tensor with population. Expect first dimension to enumerate over individuals.
+        :param args: Arguments to pass along.
+        :param kwargs: Keyword arguments to pass along.
+        :return: Population with offsprings integrate.
+        """
         itp = t.long
         ptp = population.dtype
         dev = population.device

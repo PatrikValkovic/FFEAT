@@ -4,14 +4,17 @@
 # 3/16/2021
 #
 ###############################
-from typing import Tuple, Any, Dict, Union, Callable
+from typing import Union, Callable
 import torch as t
-from ffeat import Pipe
+from ffeat import Pipe, STANDARD_REPRESENTATION
 
 _FDU = Union[float, t.distributions.Distribution]
 
 
 class _Differential(Pipe):
+    """
+    Differential evolution operator. May be used as the whole evolution or as a single crossover operator.
+    """
     def __init__(self,
                  parent_fitnesses,
                  report_offspring_fitness,
@@ -22,6 +25,20 @@ class _Differential(Pipe):
                  replace_parents: bool = True,
                  replace_only_better: bool = False,
                  discard_parents: bool = False):
+        """
+        Differential evolution operator. May be used as the whole evolution or as a single crossover operator.
+        :param parent_fitnesses: Callable to get parent fitness.
+        :param report_offspring_fitness: Callable to report fitness of the offsprings.
+        :param offsprings: Number of offsprings to create. May be float (then it is fraction of the original population
+        to select), or integer (then it is number of individuals to select).
+        :param crossover_probability: Probability that offspring inherit gene from donor vector.
+        :param differential_weight: Direction strength parameter.
+        :param evaluation: Evaluation pipe to evaluate new offsprings. Needed only if `replace_only_better` is true.
+        :param replace_parents: Whether should offsprings replace their children (default) or concatenate themselves to the population.
+        :param replace_only_better: Whether to replace parent only if offsprings is better. Default false.
+        :param discard_parents: Whether to discard parents and return only offsprings. By default false.
+        If set to true ignores it ignores both options above.
+        """
         if replace_only_better and evaluation is None:
             raise ValueError("If you want to replace with better, evaluation must be provided")
         self._offsprings = offsprings
@@ -34,7 +51,15 @@ class _Differential(Pipe):
         self.__parent_fitnesses = parent_fitnesses
         self.__report_offspring_fitness = report_offspring_fitness
 
-    def __call__(self, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+    def __call__(self, population, *args, **kwargs) -> STANDARD_REPRESENTATION:
+        """
+        Apply the differential operator on the population and return it.
+        :param population: Tensor representing the population.
+        Expects the first dimension enumerate over the individuals.
+        :param args: Arguments passed along.
+        :param kwargs: Keyword arguments passed along.
+        :return: Return fitness and mutated population.
+        """
         dev = population.device
         pop_len = len(population)
         dim = population.shape[1:]
@@ -81,6 +106,10 @@ class _Differential(Pipe):
 
 
 class Differential(_Differential):
+    """
+    Differential evolution operator.  May be used as the whole evolution or as a single crossover operator.
+    In case you have parents fitness available, use the `DifferentialWithFitness` class.
+    """
     def __init__(self,
                  offsprings: Union[int, float],
                  crossover_probability: Union[_FDU, Callable[..., _FDU]] = 0.9,
@@ -89,6 +118,19 @@ class Differential(_Differential):
                  replace_parents: bool = True,
                  replace_only_better: bool = False,
                  discard_parents: bool = False):
+        """
+        Differential evolution operator.  May be used as the whole evolution or as a single crossover operator.
+        In case you have parents fitness available, use the `DifferentialWithFitness` class.
+        :param offsprings: Number of offsprings to create. May be float (then it is fraction of the original population
+        to select), or integer (then it is number of individuals to select).
+        :param crossover_probability: Probability that offspring inherit gene from donor vector.
+        :param differential_weight: Direction strength parameter.
+        :param evaluation: Evaluation pipe to evaluate new offsprings. Needed only if `replace_only_better` is true.
+        :param replace_parents: Whether should offsprings replace their children (default) or concatenate themselves to the population.
+        :param replace_only_better: Whether to replace parent only if offsprings is better. Default false.
+        :param discard_parents: Whether to discard parents and return only offsprings. By default false.
+        If set to true ignores it ignores both options above.
+        """
         super().__init__(lambda parents, indices, *args, **kwargs: evaluation(parents[indices], *args, **kwargs),
                          lambda *args, **kwargs: None,
                          offsprings, crossover_probability,
@@ -97,6 +139,10 @@ class Differential(_Differential):
 
 
 class DifferentialWithFitness(_Differential):
+    """
+    Differential evolution operator.  May be used as the whole evolution or as a single crossover operator.
+    The parents fitness must be available.
+    """
     def __init__(self,
                  offsprings: Union[int, float],
                  crossover_probability: Union[_FDU, Callable[..., _FDU]] = 0.9,
@@ -105,6 +151,19 @@ class DifferentialWithFitness(_Differential):
                  replace_parents: bool = True,
                  replace_only_better: bool = False,
                  discard_parents: bool = False):
+        """
+        Differential evolution operator.  May be used as the whole evolution or as a single crossover operator.
+        The parents fitness must be available.
+        :param offsprings: Number of offsprings to create. May be float (then it is fraction of the original population
+        to select), or integer (then it is number of individuals to select).
+        :param crossover_probability: Probability that offspring inherit gene from donor vector.
+        :param differential_weight: Direction strength parameter.
+        :param evaluation: Evaluation pipe to evaluate new offsprings. Needed only if `replace_only_better` is true.
+        :param replace_parents: Whether should offsprings replace their children (default) or concatenate themselves to the population.
+        :param replace_only_better: Whether to replace parent only if offsprings is better. Default false.
+        :param discard_parents: Whether to discard parents and return only offsprings. By default false.
+        If set to true ignores it ignores both options above.
+        """
         super().__init__(self.__handle_parent_fitnesses,
                          self.__report_offspring_fitness,
                          offsprings, crossover_probability,
@@ -123,7 +182,17 @@ class DifferentialWithFitness(_Differential):
         self.__children_fitness = children_fitness
         self.__picked_children = picked_children
 
-    def __call__(self, fitnesses, population, *args, **kwargs) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+    def __call__(self, fitnesses, population, *args, **kwargs) -> STANDARD_REPRESENTATION:
+        """
+        Apply the differential operator on the population and return it.
+        :param fitnesses: Population fitness in the same order as the population.
+        :param population: Tensor representing the population.
+        Expects the first dimension enumerate over the individuals.
+        :param args: Arguments passed along.
+        :param kwargs: Keyword arguments passed along.
+        :return: Return fitness and mutated population.
+        """
+
         self.__fitnesses = fitnesses
 
         (newpopulation, *arg), kargs = super().__call__(population, *args, **kwargs)

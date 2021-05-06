@@ -4,9 +4,11 @@
 # 3/11/2021
 #
 ###############################
-import torch as t
 from ffeat._common.initialization.Uniform import UniformInit
 
 
 class Initialization:
+    """
+    Initialization for Particle Swarm Optimisation algorithms.
+    """
     Uniform = UniformInit
