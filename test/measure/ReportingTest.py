@@ -21,6 +21,26 @@ class ReportingTest(unittest.TestCase):
         f = t.randn((1000,))
         (nf,), kargs = q(f)
 
+    def test_should_report_to_array(self):
+        r = m.reporting.Array()
+        q = m.FitnessLowest(r)
+        f = t.randn((1000,))
+        (nf,), kargs = q(f)
+        minimum = float(t.min(f))
+        self.assertIs(nf, f)
+        self.assertEqual(len(r.measurements), 1)
+        self.assertLess(abs(minimum - r.measurements[0]), 1e-9)
+
+    def test_should_report_to_array_precreated(self):
+        r = []
+        q = m.FitnessLowest(m.reporting.Array(r))
+        f = t.randn((1000,))
+        (nf,), kargs = q(f)
+        minimum = float(t.min(f))
+        self.assertIs(nf, f)
+        self.assertEqual(len(r), 1)
+        self.assertLess(abs(minimum - r[0]), 1e-9)
+
     def test_should_report_to_file(self):
         filename = './median_fitness.txt'
         q = m.FitnessMedian(m.reporting.File(filename))
